@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
-                            width: constraints.maxWidth * 4,
+                            width: constraints.maxWidth * 0.4,
                             height: 32,
                             decoration: BoxDecoration(
                               color: Color(0xffFF6F15),
