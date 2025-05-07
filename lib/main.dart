@@ -1,4 +1,5 @@
 import 'package:fe_catat_uangku/routes/routes.dart';
+import 'package:fe_catat_uangku/utils/custom_colors.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,7 +13,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(color: Colors.white),
+        colorScheme: const ColorScheme.light(primary: CustomColors.primary, surface: Colors.white),
+      ),
       routes: routes,
       initialRoute: '/main-page',
       debugShowCheckedModeBanner: false,
