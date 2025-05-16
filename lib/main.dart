@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fe_catat_uangku/pages/pages.dart';
+import 'package:fe_catat_uangku/routes/routes.dart';
+import 'package:fe_catat_uangku/utils/custom_colors.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,25 +14,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-
-      // // Opsi 1: langsung pakai home
-      // home: RegisterPage(),
-
-      // Opsi 2: pakai named routes
-      initialRoute: '/register',
-      routes: {
-        '/splash': (_)   => SplashscreenPage(),
-        '/register': (_)     => AuthPage(),
-        '/login': (_)    => AuthPage(),
-        '/home': (_)     => HomePage(),
-     
-        
-      },
-
+      title: 'Catat Uangku',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(color: Colors.white),
+        colorScheme: const ColorScheme.light(primary: CustomColors.primary, surface: Colors.white),
       ),
+      routes: routes,
+      initialRoute: '/main-page',
+      debugShowCheckedModeBanner: false,
     );
   }
 }
