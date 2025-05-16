@@ -5,4 +5,5 @@ Map<String, Widget Function(BuildContext)> routes = {
   '/main-page': (context) => const MainPage(),
   '/payment-planning-page': (context) => const PaymentPlanningPage(),
   '/budget-planning-page': (context) => const BudgetPlanningPage(),
+  '/payment-planning-detail-page': (context) => const PaymentPlanningDetailPage(),
 };
