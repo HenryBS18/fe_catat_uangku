@@ -25,13 +25,25 @@ class _MainPageState extends State<MainPage> {
           });
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(currentIndex == 0 ? Icons.home : Icons.home_outlined), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(currentIndex == 1 ? Icons.timer : Icons.timer_outlined), label: 'Rencana'),
+          BottomNavigationBarItem(
+              icon: Icon(currentIndex == 0 ? Icons.home : Icons.home_outlined),
+              label: 'Beranda'),
+          BottomNavigationBarItem(
+              icon:
+                  Icon(currentIndex == 1 ? Icons.timer : Icons.timer_outlined),
+              label: 'Rencana'),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true, // agar halaman bisa penuh
+            backgroundColor: Colors.transparent,
+            builder: (context) => const AddTransactionPageModal(),
+          );
+        },
         child: Icon(Icons.add, size: 32),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
