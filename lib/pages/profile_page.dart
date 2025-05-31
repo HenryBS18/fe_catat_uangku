@@ -19,7 +19,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE5E7EB),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
         title: const Text('Profil'),
         backgroundColor: Colors.white,
@@ -33,7 +33,9 @@ class ProfilePage extends StatelessWidget {
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 2,
+            elevation: 10,
+            shadowColor: const Color.fromRGBO(
+                0, 0, 0, 2), // replace deprecated withOpacity
             child: Column(
               children: [
                 const SizedBox(height: 16),
@@ -166,7 +168,9 @@ class ProfilePage extends StatelessWidget {
       {required String title, required List<Widget> children}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 1,
+      elevation: 10,
+      shadowColor:
+          const Color.fromRGBO(0, 0, 0, 2), // avoid deprecated withOpacity
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
@@ -194,11 +198,14 @@ class ProfilePage extends StatelessWidget {
       trailing: trailing != null
           ? Text(trailing)
           : const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: trailing != null
-          ? null
-          : () {
-              _openModal(context, title);
-            },
+      onTap: title == 'Jumlah Transaksi'
+          ? () {
+              Navigator.pushNamed(
+                  context, '/payment-planning-page'); // nanti bisa diganti
+            }
+          : trailing == null
+              ? () => _openModal(context, title)
+              : null, // semua item lain dengan trailing = tidak bisa diklik
     );
   }
 
@@ -212,6 +219,15 @@ class ProfilePage extends StatelessWidget {
         break;
       case 'Notifikasi & Pengingat':
         content = const NotificationSettingModal();
+        break;
+      case 'Pusat Bantuan':
+        content = const HelpCenterModal();
+        break;
+      case 'Syarat & Ketentuan':
+        content = const TermsAndConditionsModal();
+        break;
+      case 'Kebijakan Privasi':
+        content = const PrivacyPolicyModal();
         break;
       default:
         content = Center(child: Text('Konten tidak tersedia untuk $title'));

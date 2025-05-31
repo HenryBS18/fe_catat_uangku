@@ -18,5 +18,8 @@ part 'budget_planning_page.dart';
 part 'payment_planning_detail_page.dart';
 part 'profile_page.dart';
 
-part 'change_password_modal.dart';
-part 'notification_settings_modal.dart';
+part 'modals/change_password_modal.dart';
+part 'modals/notification_settings_modal.dart';
+part 'modals/help_center_modal.dart';
+part 'modals/term_condition_modal.dart';
+part 'modals/privacy_policy_modal.dart';
