@@ -35,14 +35,10 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
               icon:
                   Icon(currentIndex == 2 ? Icons.person : Icons.person_outline),
-              label: 'profile')
+              label: 'profile'),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
-        onPressed: () {},
-        child: Icon(Icons.add, size: 32),
-      ),
+      floatingActionButton: const HoldActionFAB(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
