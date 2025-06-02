@@ -34,18 +34,7 @@ class _MainPageState extends State<MainPage> {
               label: 'Rencana'),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true, // agar halaman bisa penuh
-            backgroundColor: Colors.transparent,
-            builder: (context) => const AddTransactionPageModal(),
-          );
-        },
-        child: Icon(Icons.add, size: 32),
-      ),
+      floatingActionButton: const HoldActionFAB(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
