@@ -19,6 +19,7 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
     _initSpeech();
   }
 
+  /// Inisialisasi speech recognition
   Future<void> _initSpeech() async {
     final hasSpeech = await _speech.initialize(
       onStatus: (status) {
@@ -127,12 +128,10 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Hasil Teks di Atas Card
+                      // Hasil Teks
                       Container(
                         padding: const EdgeInsets.all(12),
-                        height:
-                            100, // atau gunakan MediaQuery jika mau fleksibel
-
+                        height: 100,
                         child: Center(
                           child: Text(
                             _lastWords.isEmpty ? "..." : _lastWords,
@@ -141,7 +140,6 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 16),
 
                       // Tombol Mic
@@ -184,13 +182,18 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
                       const Spacer(),
 
                       Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: 30), // naikkan 24px dari bawah
+                        padding: const EdgeInsets.only(bottom: 30),
                         child: ElevatedButton.icon(
                           onPressed: _lastWords.isEmpty
                               ? null
                               : () {
-                                  Navigator.of(context).pop(_lastWords);
+                                  /// Kembalikan hasil pengenalan suara
+                                  /// Format Map agar mudah diproses BLoC atau API
+                                  debugPrint("=== HASIL VOICE INPUT ===");
+                                  debugPrint(_lastWords);
+                                  Navigator.of(context).pop({
+                                    'voiceText': _lastWords,
+                                  });
                                 },
                           icon: const Icon(Icons.arrow_forward),
                           label: const Text("Selanjutnya"),
