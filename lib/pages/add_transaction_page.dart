@@ -378,26 +378,3 @@ class CategorySelectionPage extends StatelessWidget {
     );
   }
 }
-
-// INI UNTUK MODAL dari Page INI
-class AddTransactionPageModal extends StatelessWidget {
-  const AddTransactionPageModal({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.95,
-      maxChildSize: 0.95,
-      minChildSize: 0.5,
-      builder: (_, controller) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          child: Scaffold(
-            body: AddTransactionPage(),
-          ),
-        );
-      },
-    );
-  }
-}
