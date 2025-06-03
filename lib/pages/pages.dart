@@ -9,7 +9,11 @@ import 'package:fe_catat_uangku/utils/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fe_catat_uangku/services/api_services.dart';
+import 'dart:async';
 import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 
 part 'main_page.dart';
 part 'splashscreen_page.dart';
@@ -20,6 +24,7 @@ part 'payment_planning_page.dart';
 part 'budget_planning_page.dart';
 part 'payment_planning_detail_page.dart';
 part 'add_transaction_page.dart';
+part 'voice_record_modal.dart';
 
 part '../widgets/hold_action_fab.dart';
 part 'profile_page.dart';
@@ -29,3 +34,6 @@ part 'modals/notification_settings_modal.dart';
 part 'modals/help_center_modal.dart';
 part 'modals/term_condition_modal.dart';
 part 'modals/privacy_policy_modal.dart';
+part 'modals/wallet_selection_page.dart';
+part 'modals/categories_selection_page.dart';
+part 'modals/notes_section_page.dart';
