@@ -11,6 +11,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fe_catat_uangku/services/api_services.dart';
 import 'dart:async';
 import 'dart:math';
+
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:camera/camera.dart';
+
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -24,6 +30,7 @@ part 'payment_planning_page.dart';
 part 'budget_planning_page.dart';
 part 'payment_planning_detail_page.dart';
 part 'add_transaction_page.dart';
+part 'scan_page.dart';
 part 'voice_record_modal.dart';
 
 part '../widgets/hold_action_fab.dart';

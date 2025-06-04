@@ -214,7 +214,7 @@ class _HoldActionFABState extends State<HoldActionFAB> {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (context) => const AddTransactionPageModal(),
+        builder: (context) => const AddTransactionPage(),
       );
     } else if (label == 'Scan') {
       showModalBottomSheet(
@@ -269,27 +269,4 @@ class _FanPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class DummyScanModal extends StatelessWidget {
-  const DummyScanModal({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.95,
-      maxChildSize: 0.95,
-      minChildSize: 0.5,
-      builder: (context, scrollController) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          child: Scaffold(
-            appBar: AppBar(title: const Text("Scan (Dummy)")),
-            body: const Center(child: Text("Ini halaman scan dummy")),
-          ),
-        );
-      },
-    );
-  }
 }
