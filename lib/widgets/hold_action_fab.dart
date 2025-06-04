@@ -223,6 +223,13 @@ class _HoldActionFABState extends State<HoldActionFAB> {
         backgroundColor: Colors.transparent,
         builder: (context) => const DummyScanModal(),
       );
+    } else if (label == 'Voice') {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => const VoiceModalPage(),
+      );
     } else {
       debugPrint('Tombol "$label" aktif');
     }
