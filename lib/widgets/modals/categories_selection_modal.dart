@@ -1,4 +1,4 @@
-part of '../pages.dart';
+part of '../../pages/pages.dart';
 
 class CategorySelectionModal extends StatelessWidget {
   final List<String> categories;

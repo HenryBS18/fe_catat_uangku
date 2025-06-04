@@ -214,14 +214,14 @@ class _HoldActionFABState extends State<HoldActionFAB> {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (context) => const AddTransactionPage(),
+        builder: (context) => const AddTransactionPageModal(),
       );
     } else if (label == 'Scan') {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (context) => const DummyScanModal(),
+        builder: (context) => const ScanModal(),
       );
     } else if (label == 'Voice') {
       showModalBottomSheet(

@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
 
-import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 
@@ -29,18 +28,21 @@ part 'planning_page.dart';
 part 'payment_planning_page.dart';
 part 'budget_planning_page.dart';
 part 'payment_planning_detail_page.dart';
-part 'add_transaction_page.dart';
-part 'scan_page.dart';
-part 'voice_record_modal.dart';
 
 part '../widgets/hold_action_fab.dart';
 part 'profile_page.dart';
 
-part 'modals/change_password_modal.dart';
-part 'modals/notification_settings_modal.dart';
-part 'modals/help_center_modal.dart';
-part 'modals/term_condition_modal.dart';
-part 'modals/privacy_policy_modal.dart';
-part 'modals/wallet_selection_page.dart';
-part 'modals/categories_selection_page.dart';
-part 'modals/notes_section_page.dart';
+// modal di profile
+part '../widgets/modals/change_password_modal.dart';
+part '../widgets/modals/notification_settings_modal.dart';
+part '../widgets/modals/help_center_modal.dart';
+part '../widgets/modals/term_condition_modal.dart';
+part '../widgets/modals/privacy_policy_modal.dart';
+part '../widgets/modals/wallet_selection_page.dart';
+part '../widgets/modals/categories_selection_modal.dart';
+part '../widgets/modals/notes_section_modal.dart';
+
+//Modal untuk Transaction
+part '../widgets/modals/add_transaction_modal.dart';
+part '../widgets/modals/scan_modal.dart';
+part '../widgets/modals/voice_record_modal.dart';

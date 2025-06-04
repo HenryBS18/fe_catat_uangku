@@ -1,4 +1,4 @@
-part of '../pages.dart';
+part of '../../pages/pages.dart';
 
 class WalletSelectionModal extends StatelessWidget {
   final List<String> wallets;
