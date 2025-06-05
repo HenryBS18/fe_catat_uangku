@@ -9,7 +9,6 @@ class VoiceModalPage extends StatefulWidget {
 
 class _VoiceModalPageState extends State<VoiceModalPage> {
   final SpeechToText _speech = SpeechToText();
-  bool _hasSpeech = false;
   bool _isListening = false;
   String _lastWords = '';
 
@@ -21,7 +20,7 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
 
   /// Inisialisasi speech recognition
   Future<void> _initSpeech() async {
-    final hasSpeech = await _speech.initialize(
+    await _speech.initialize(
       onStatus: (status) {
         if (status == 'done' || status == 'notListening') {
           setState(() => _isListening = false);
@@ -29,8 +28,6 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
       },
       onError: (error) => debugPrint("Speech error: $error"),
     );
-    if (!mounted) return;
-    setState(() => _hasSpeech = hasSpeech);
   }
 
   void _startListening() {

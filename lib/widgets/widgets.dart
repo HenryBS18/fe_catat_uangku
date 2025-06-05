@@ -1,4 +1,11 @@
+import 'dart:io';
+
+import 'package:camera/camera.dart';
+import 'package:fe_catat_uangku/utils/thousands_separator_input_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 part 'dots_indicator.dart';
 
