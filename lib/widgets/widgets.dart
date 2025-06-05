@@ -27,3 +27,4 @@ part 'modals/scan_modal.dart';
 part 'input/input.dart';
 part 'input/input_password.dart';
 part 'button.dart';
+part 'loading.dart';
