@@ -9,7 +9,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int currentIndex = 0;
-  List<Widget> pages = const [HomePage(), PlanningPage(), ProfilePage()];
+  List<Widget> pages = const [HomePage(), PlanningPage(), ProfilePage(), TransactionHistoryPage()];
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         unselectedItemColor: Colors.black,
-        currentIndex: currentIndex,
+        currentIndex: currentIndex, 
         onTap: (index) {
           setState(() {
             currentIndex = index;

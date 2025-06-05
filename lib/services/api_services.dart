@@ -28,6 +28,21 @@ class ApiServices {
 
     return PostResponse(body: body, headers: resp.headers);
   }
+  Future<List<dynamic>> getApiResponse(String path) async {
+  final uri = Uri.parse('$baseUrl$path');
+  final response = await http.get(uri);
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    if (data is List) {
+      return data;
+    } else {
+      throw Exception('Response is not a list');
+    }
+  } else {
+    throw Exception('Failed to load data: ${response.statusCode}');
+  }
+}
 }
 
 final apiServices = ApiServices();
