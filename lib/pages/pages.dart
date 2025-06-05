@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 part 'main_page.dart';
 part 'splashscreen_page.dart';
 part 'home_page.dart';
-part 'authpage.dart';
+part 'auth_page.dart';
 part 'planning_page.dart';
 part 'payment_planning_page.dart';
 part 'budget_planning_page.dart';
