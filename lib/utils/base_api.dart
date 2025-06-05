@@ -12,24 +12,34 @@ class BaseApi {
     this.prefix = '',
   });
 
-  Future<http.Response> get(String endpoint, {Map<String, String>? headers}) async {
-    return await http.get(_processUri(endpoint), headers: await _checkHeaders(headers));
+  Future<http.Response> get(String endpoint,
+      {Map<String, String>? headers}) async {
+    return await http.get(_processUri(endpoint),
+        headers: await _checkHeaders(headers));
   }
 
-  Future<http.Response> post(String endpoint, {Map<String, dynamic>? data, Map<String, String>? headers}) async {
-    return await http.post(_processUri(endpoint), headers: await _checkHeaders(headers), body: _processBody(data));
+  Future<http.Response> post(String endpoint,
+      {Map<String, dynamic>? data, Map<String, String>? headers}) async {
+    return await http.post(_processUri(endpoint),
+        headers: await _checkHeaders(headers), body: _processBody(data));
   }
 
-  Future<http.Response> put(String endpoint, {Map<String, dynamic>? data, Map<String, String>? headers}) async {
-    return await http.put(_processUri(endpoint), headers: await _checkHeaders(headers), body: _processBody(data));
+  Future<http.Response> put(String endpoint,
+      {Map<String, dynamic>? data, Map<String, String>? headers}) async {
+    return await http.put(_processUri(endpoint),
+        headers: await _checkHeaders(headers), body: _processBody(data));
   }
 
-  Future<http.Response> patch(String endpoint, {Map<String, dynamic>? data, Map<String, String>? headers}) async {
-    return await http.patch(_processUri(endpoint), headers: await _checkHeaders(headers), body: _processBody(data));
+  Future<http.Response> patch(String endpoint,
+      {Map<String, dynamic>? data, Map<String, String>? headers}) async {
+    return await http.patch(_processUri(endpoint),
+        headers: await _checkHeaders(headers), body: _processBody(data));
   }
 
-  Future<http.Response> delete(String endpoint, {Map<String, dynamic>? data, Map<String, String>? headers}) async {
-    return await http.delete(_processUri(endpoint), headers: await _checkHeaders(headers), body: _processBody(data));
+  Future<http.Response> delete(String endpoint,
+      {Map<String, dynamic>? data, Map<String, String>? headers}) async {
+    return await http.delete(_processUri(endpoint),
+        headers: await _checkHeaders(headers), body: _processBody(data));
   }
 
   Future<http.StreamedResponse> postMultipart(
@@ -61,7 +71,8 @@ class BaseApi {
 
   Uri _processUri(String endpoint) => Uri.parse('$baseUrl$prefix$endpoint');
 
-  Future<Map<String, String>> _checkHeaders(Map<String, String>? headers) async {
+  Future<Map<String, String>> _checkHeaders(
+      Map<String, String>? headers) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
 
@@ -78,12 +89,13 @@ class BaseApi {
       };
     }
 
-    if (token == null) {
+    if (token != null) {
       finalHeaders['Authorization'] = 'Bearer $token';
     }
 
     return finalHeaders;
   }
 
-  Object? _processBody(Map<String, dynamic>? data) => data != null ? jsonEncode(data) : null;
+  Object? _processBody(Map<String, dynamic>? data) =>
+      data != null ? jsonEncode(data) : null;
 }
