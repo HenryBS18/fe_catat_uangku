@@ -6,7 +6,9 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService {
-  final BaseApi api = BaseApi();
+  final BaseApi api;
+
+  UserService({BaseApi? api}) : api = api ?? BaseApi();
 
   Future<bool> register(User user) async {
     final Response response = await api.post('/users/register', data: {

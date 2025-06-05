@@ -1,16 +1,27 @@
-# fe_catat_uangku
 
-A new Flutter project.
+# Testing Documentation
 
-## Getting Started
+Melakukan Unit dan Widget Test
 
-This project is a starting point for a Flutter application.
+## Widget Test
 
-A few resources to get you started if this is your first Flutter project:
+Menguji UI dan juga interaksi Widget
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+File: test/widget/widget_test.dart
+Melakukan Pengujian untuk form login dan register, Input form dan juga button yang ada.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Cara Menjalankan Test
+
+flutter test test/widget/widget_test.dart
+
+## Unit Test
+
+Menguji validasi input dna output Function dan method Login Register
+
+File: test/unit/validation_test.dart
+Melakukan pengujian Function dan method login register menggunakan mocking API
+
+### Cara Menjalankan Test
+
+flutter test test/unit/validation_test.dart
+
