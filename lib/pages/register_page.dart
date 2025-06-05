@@ -130,8 +130,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             controller: passwordController,
                             validator: (value) {
                               if (value!.isEmpty) return "Password tidak boleh kosong";
-                              if (!RegExp(r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$').hasMatch(value))
+                              if (!RegExp(r'^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$').hasMatch(value)) {
                                 return "Minimal 8 karakter, 1 kapital, angka dan simbol";
+                              }
                               return null;
                             },
                           ),
