@@ -9,7 +9,7 @@ class CustomTextForm extends StatelessWidget {
 
   const CustomTextForm({
     super.key,
-    required this.labelText,  
+    required this.labelText,
     required this.iconData,
     required this.controller,
     this.obscureText = false,
@@ -21,31 +21,30 @@ class CustomTextForm extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
-    decoration: InputDecoration(
-  labelText: labelText,
-  prefixIcon: Icon(iconData),
-  errorText: errorText,
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-  ),
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: const BorderSide(color: Colors.grey),
-  ),
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(color: Theme.of(context).primaryColor),
-  ),
-  errorBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: const BorderSide(color: Colors.red),
-  ),
-  focusedErrorBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: const BorderSide(color: Colors.red),
-  ),
-),
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: Icon(iconData),
+        errorText: errorText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Theme.of(context).primaryColor),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+      ),
     );
   }
 }
-
