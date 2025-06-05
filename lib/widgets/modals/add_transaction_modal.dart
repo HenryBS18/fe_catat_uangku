@@ -1,4 +1,4 @@
-part of 'pages.dart';
+part of '../../pages/pages.dart';
 
 class AddTransactionPage extends StatefulWidget {
   const AddTransactionPage({super.key});

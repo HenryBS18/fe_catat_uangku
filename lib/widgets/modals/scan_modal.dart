@@ -1,13 +1,13 @@
-part of 'pages.dart';
+part of '../../pages/pages.dart';
 
-class DummyScanModal extends StatefulWidget {
-  const DummyScanModal({super.key});
+class ScanModal extends StatefulWidget {
+  const ScanModal({super.key});
 
   @override
-  State<DummyScanModal> createState() => _DummyScanModalState();
+  State<ScanModal> createState() => _ScanModalState();
 }
 
-class _DummyScanModalState extends State<DummyScanModal> {
+class _ScanModalState extends State<ScanModal> {
   List<CameraDescription> _cameras = [];
   CameraController? _controller;
   File? _imageFile;

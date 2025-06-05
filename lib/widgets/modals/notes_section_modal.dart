@@ -1,4 +1,4 @@
-part of '../pages.dart';
+part of '../../pages/pages.dart';
 
 class NotesSectionModal extends StatelessWidget {
   final String initialNote;

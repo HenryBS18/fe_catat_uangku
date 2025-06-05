@@ -1,4 +1,4 @@
-part of 'pages.dart';
+part of '../../pages/pages.dart';
 
 class VoiceModalPage extends StatefulWidget {
   const VoiceModalPage({super.key});
