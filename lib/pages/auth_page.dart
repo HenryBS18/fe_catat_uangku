@@ -15,11 +15,40 @@ class _AuthPageState extends State<AuthPage> {
   final registerPassword = TextEditingController();
   final registerName = TextEditingController();
 
-  String? loginEmailError;
-  String? loginPasswordError;
-  String? registerEmailError;
-  String? registerPasswordError;
-  String? registerNameError;
+  void register() async {
+    try {
+      final UserService userService = UserService();
+
+      final bool isSuccess = await userService.register(User(
+        email: registerEmail.text,
+        password: registerPassword.text,
+        name: registerName.text,
+      ));
+
+      if (isSuccess) {
+        Navigator.pushNamedAndRemoveUntil(context, '/main-page', (route) => false);
+        return;
+      }
+    } catch (e) {}
+  }
+
+  void login() async {
+    try {
+      final UserService userService = UserService();
+
+      final bool isSuccess = await userService.login(User(
+        email: loginEmail.text,
+        password: loginPassword.text,
+      ));
+
+      if (isSuccess) {
+        Navigator.pushNamedAndRemoveUntil(context, '/main-page', (route) => false);
+        return;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +101,9 @@ class _AuthPageState extends State<AuthPage> {
                             children: [
                               Expanded(
                                 child: TextButton(
-                                  onPressed: () => setState(() => isLogin = true),
+                                  onPressed: () => setState(() {
+                                    isLogin = true;
+                                  }),
                                   style: TextButton.styleFrom(
                                     backgroundColor: isLogin ? Theme.of(context).primaryColor : Colors.grey[200],
                                     shape: const RoundedRectangleBorder(
@@ -87,7 +118,9 @@ class _AuthPageState extends State<AuthPage> {
                               ),
                               Expanded(
                                 child: TextButton(
-                                  onPressed: () => setState(() => isLogin = false),
+                                  onPressed: () => setState(() {
+                                    isLogin = false;
+                                  }),
                                   style: TextButton.styleFrom(
                                     backgroundColor: !isLogin ? Theme.of(context).primaryColor : Colors.grey[200],
                                     shape: const RoundedRectangleBorder(
@@ -104,15 +137,9 @@ class _AuthPageState extends State<AuthPage> {
                           ),
                           const SizedBox(height: 24),
                           if (isLogin) ...[
-                            CustomTextForm(labelText: 'Email', iconData: Icons.email, controller: loginEmail, errorText: loginEmailError),
+                            CustomTextForm(labelText: 'Email', iconData: Icons.email, controller: loginEmail),
                             const SizedBox(height: 16),
-                            CustomTextForm(
-                              labelText: 'Password',
-                              iconData: Icons.lock,
-                              obscureText: true,
-                              controller: loginPassword,
-                              errorText: loginPasswordError,
-                            ),
+                            CustomTextForm(labelText: 'Password', iconData: Icons.lock, obscureText: true, controller: loginPassword),
                             const SizedBox(height: 8),
                             Row(
                               children: [
@@ -125,24 +152,18 @@ class _AuthPageState extends State<AuthPage> {
                             const SizedBox(height: 8),
                             CustomElevatedButton(
                               buttonText: 'Log In',
-                              onPressed: () {},
+                              onPressed: login,
                             ),
                           ] else ...[
-                            CustomTextForm(labelText: 'Name', iconData: Icons.person, controller: registerName, errorText: registerNameError),
+                            CustomTextForm(labelText: 'Name', iconData: Icons.person, controller: registerName),
                             const SizedBox(height: 16),
-                            CustomTextForm(labelText: 'Email', iconData: Icons.email, controller: registerEmail, errorText: registerEmailError),
+                            CustomTextForm(labelText: 'Email', iconData: Icons.email, controller: registerEmail),
                             const SizedBox(height: 16),
-                            CustomTextForm(
-                              labelText: 'Password',
-                              iconData: Icons.lock,
-                              obscureText: true,
-                              controller: registerPassword,
-                              errorText: registerPasswordError,
-                            ),
+                            CustomTextForm(labelText: 'Password', iconData: Icons.lock, obscureText: true, controller: registerPassword),
                             const SizedBox(height: 8),
                             CustomElevatedButton(
                               buttonText: 'Sign Up',
-                              onPressed: () {},
+                              onPressed: register,
                             ),
                           ],
                           const SizedBox(height: 16),
