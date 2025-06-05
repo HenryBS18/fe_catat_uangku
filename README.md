@@ -14,3 +14,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## OPIK
+``flutter test test/services/transaction_service_test.dart && flutter test test/widgets/add_transaction_modal_test.dart
+``
