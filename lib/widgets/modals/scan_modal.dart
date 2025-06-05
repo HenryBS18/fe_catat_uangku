@@ -1,4 +1,4 @@
-part of '../../pages/pages.dart';
+part of '../widgets.dart';
 
 class ScanModal extends StatefulWidget {
   const ScanModal({super.key});

@@ -1,4 +1,4 @@
-part of '../../pages/pages.dart';
+part of '../widgets.dart';
 
 class TermsAndConditionsModal extends StatelessWidget {
   const TermsAndConditionsModal({super.key});

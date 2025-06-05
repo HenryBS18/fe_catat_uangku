@@ -1,4 +1,4 @@
-part of '../../pages/pages.dart';
+part of '../widgets.dart';
 
 class PrivacyPolicyModal extends StatelessWidget {
   const PrivacyPolicyModal({super.key});
