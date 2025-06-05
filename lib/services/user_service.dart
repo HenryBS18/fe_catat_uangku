@@ -44,4 +44,11 @@ class UserService {
 
     throw Exception(data['message']);
   }
+
+  Future<bool> logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+
+    return true;
+  }
 }
