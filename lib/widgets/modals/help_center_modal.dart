@@ -1,4 +1,4 @@
-part of '../../pages/pages.dart';
+part of '../widgets.dart';
 
 class HelpCenterModal extends StatelessWidget {
   const HelpCenterModal({super.key});
