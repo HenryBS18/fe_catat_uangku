@@ -14,15 +14,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   String? noteError;
 
   String selectedWallet = 'Tunai';
+  String? selectedWalletId;
   String selectedCategory = 'Makanan & Minuman';
   DateTime selectedDate = DateTime.now();
-
-  final List<String> dummyWallets = [
-    'Tunai',
-    'Bank BCA',
-    'Bank Mandiri',
-    'e-Wallet OVO',
-  ];
 
   final List<String> dummyCategories = [
     'Makanan & Minuman',
@@ -42,6 +36,60 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             noteController.text.length > 50 ? 'Maksimal 50 karakter' : null;
       });
     });
+  }
+
+  bool isLoading = false;
+
+  void _saveTransaction() async {
+    if (amountController.text.isEmpty ||
+        int.tryParse(amountController.text.replaceAll('.', '')) == null ||
+        int.parse(amountController.text.replaceAll('.', '')) <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Jumlah tidak boleh kosong atau nol')),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final TransactionService transactionService = TransactionService();
+      if (selectedWalletId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pilih dompet terlebih dahulu')),
+        );
+        return;
+      }
+      final transaction = TransactionModel(
+        walletId: selectedWalletId!, // Hard Code sementara
+        type: isIncome ? 'income' : 'expense',
+        amount: int.parse(amountController.text.replaceAll('.', '')),
+        category: selectedCategory,
+        date: selectedDate.toIso8601String(),
+        note: noteController.text,
+      );
+
+      final bool isSuccess =
+          await transactionService.createTransaction(transaction);
+
+      if (isSuccess) {
+        Navigator.pop(context); // close modal/page
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaksi berhasil disimpan')),
+        );
+        return;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan transaksi: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -144,12 +192,21 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                               context: context,
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
-                              builder: (_) => WalletSelectionModal(
-                                wallets: dummyWallets,
-                                onSelected: (value) {
-                                  setState(() => selectedWallet = value);
-                                },
-                              ),
+                              builder: (_) {
+                                return BlocProvider.value(
+                                  value: context.read<WalletBloc>()
+                                    ..add(FetchWallets()),
+                                  child: WalletSelectionModal(
+                                    onSelected: (wallet) {
+                                      setState(() {
+                                        selectedWallet = wallet.name;
+                                        selectedWalletId =
+                                            wallet.id; // <- tambahkan ini
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
                             );
                           },
                         ),
@@ -255,24 +312,16 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
-                    onPressed: () {
-                      print('==== DATA TRANSAKSI ====');
-                      print('Tipe: ${isIncome ? 'Income' : 'Expense'}');
-                      print('Wallet: $selectedWallet');
-                      print('Jumlah: ${amountController.text}');
-                      print('Kategori: $selectedCategory');
-                      print('Catatan: ${noteController.text}');
-                      print('Tanggal: ${selectedDate.toIso8601String()}');
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.arrow_forward),
-                    label: const Text("Selanjutnya"),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    onPressed: isLoading ? null : _saveTransaction,
+                    icon: isLoading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Icon(Icons.arrow_forward),
+                    label: Text(isLoading ? 'Menyimpan...' : 'Selanjutnya'),
                   ),
                   const SizedBox(height: 24),
                 ],

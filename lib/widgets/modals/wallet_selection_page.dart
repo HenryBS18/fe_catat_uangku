@@ -1,12 +1,10 @@
 part of '../widgets.dart';
 
 class WalletSelectionModal extends StatelessWidget {
-  final List<String> wallets;
-  final Function(String) onSelected;
+  final Function(WalletModel) onSelected;
 
   const WalletSelectionModal({
     super.key,
-    required this.wallets,
     required this.onSelected,
   });
 
@@ -20,7 +18,6 @@ class WalletSelectionModal extends StatelessWidget {
         return ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           child: Scaffold(
-            backgroundColor: const Color(0xFFF7F7F7),
             appBar: AppBar(
               backgroundColor: const Color(0xFF0F55C3),
               centerTitle: true,
@@ -31,18 +28,31 @@ class WalletSelectionModal extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-            body: ListView.builder(
-              controller: controller,
-              itemCount: wallets.length,
-              itemBuilder: (_, index) {
-                return ListTile(
-                  title: Text(wallets[index]),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    onSelected(wallets[index]);
-                    Navigator.pop(context);
-                  },
-                );
+            body: BlocBuilder<WalletBloc, WalletState>(
+              builder: (context, state) {
+                if (state is WalletLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is WalletLoaded) {
+                  return ListView.builder(
+                    controller: controller,
+                    itemCount: state.wallets.length,
+                    itemBuilder: (_, index) {
+                      final wallet = state.wallets[index];
+                      return ListTile(
+                        title: Text(wallet.name),
+                        subtitle: Text('Saldo: Rp${wallet.balance}'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          onSelected(wallet);
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  );
+                } else if (state is WalletError) {
+                  return Center(child: Text(state.message));
+                }
+                return const SizedBox.shrink();
               },
             ),
           ),

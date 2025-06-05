@@ -16,6 +16,31 @@ class ProfilePage extends StatelessWidget {
     this.totalTransactions = 134,
   });
 
+  void _handleLogout(BuildContext context) async {
+    final UserService _userService = UserService();
+    try {
+      bool loggedOut = await _userService.logout();
+      if (loggedOut) {
+        // Navigasi ke halaman login dan hapus semua rute sebelumnya
+        // Pastikan Anda memiliki halaman login dan rute bernama '/login-page' atau sesuai dengan aplikasi Anda
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            '/login-page',
+            (Route<dynamic> route) =>
+                false); // <<< GANTI '/login-page' DENGAN ROUTE HALAMAN LOGIN ANDA
+
+        // Tampilkan SnackBar (opsional)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Berhasil keluar akun')),
+        );
+      }
+    } catch (e) {
+      // Tangani error jika ada (meskipun logout() Anda saat ini tidak melempar error)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal keluar akun: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,9 +56,11 @@ class ProfilePage extends StatelessWidget {
         children: [
           // Profile Header
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             elevation: 10,
-            shadowColor: const Color.fromRGBO(0, 0, 0, 2), // replace deprecated withOpacity
+            shadowColor: const Color.fromRGBO(
+                0, 0, 0, 2), // replace deprecated withOpacity
             child: Column(
               children: [
                 const SizedBox(height: 16),
@@ -43,11 +70,14 @@ class ProfilePage extends StatelessWidget {
                   //     AssetImage('assets/profile.jpg'), // Ganti dengan assetmu
                 ),
                 const SizedBox(height: 8),
-                Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(name,
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold)),
                 Text(email),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(accountType, style: const TextStyle(color: Colors.grey)),
+                  child: Text(accountType,
+                      style: const TextStyle(color: Colors.grey)),
                 ),
                 Container(
                   decoration: const BoxDecoration(
@@ -56,7 +86,8 @@ class ProfilePage extends StatelessWidget {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),
-                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+                    borderRadius:
+                        BorderRadius.vertical(bottom: Radius.circular(20)),
                   ),
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -73,7 +104,8 @@ class ProfilePage extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.lightGreenAccent.shade100,
                               foregroundColor: Colors.blue.shade900,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: () {},
                             child: const Text('Tingkatkan Sekarang'),
@@ -102,9 +134,12 @@ class ProfilePage extends StatelessWidget {
             context,
             title: 'Informasi Akun',
             children: [
-              _itemTile(context, Icons.calendar_today, 'Tanggal Bergabung', joinedDate),
-              _itemTile(context, Icons.account_circle, 'Tipe Akun', accountType),
-              _itemTile(context, Icons.receipt, 'Jumlah Transaksi', '$totalTransactions transaksi dicatat'),
+              _itemTile(context, Icons.calendar_today, 'Tanggal Bergabung',
+                  joinedDate),
+              _itemTile(
+                  context, Icons.account_circle, 'Tipe Akun', accountType),
+              _itemTile(context, Icons.receipt, 'Jumlah Transaksi',
+                  '$totalTransactions transaksi dicatat'),
             ],
           ),
 
@@ -138,13 +173,15 @@ class ProfilePage extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24)),
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             onPressed: () {
-              //
+              _handleLogout(context);
             },
-            child: const Text('Keluar dari Akun', style: TextStyle(fontSize: 16, color: Colors.white)),
+            child: const Text('Keluar dari Akun',
+                style: TextStyle(fontSize: 16, color: Colors.white)),
           ),
         ],
       ),
@@ -152,11 +189,13 @@ class ProfilePage extends StatelessWidget {
   }
 
   // Helper Widget untuk Section
-  Widget _sectionCard(BuildContext context, {required String title, required List<Widget> children}) {
+  Widget _sectionCard(BuildContext context,
+      {required String title, required List<Widget> children}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 10,
-      shadowColor: const Color.fromRGBO(0, 0, 0, 2), // avoid deprecated withOpacity
+      shadowColor:
+          const Color.fromRGBO(0, 0, 0, 2), // avoid deprecated withOpacity
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
@@ -164,7 +203,9 @@ class ProfilePage extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: Text(title,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold)),
             ),
             ...children,
           ],
@@ -174,14 +215,18 @@ class ProfilePage extends StatelessWidget {
   }
 
   // Item List Tile
-  Widget _itemTile(BuildContext context, IconData icon, String title, [String? trailing]) {
+  Widget _itemTile(BuildContext context, IconData icon, String title,
+      [String? trailing]) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
-      trailing: trailing != null ? Text(trailing) : const Icon(Icons.arrow_forward_ios, size: 16),
+      trailing: trailing != null
+          ? Text(trailing)
+          : const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: title == 'Jumlah Transaksi'
           ? () {
-              Navigator.pushNamed(context, '/payment-planning-page'); // nanti bisa diganti
+              Navigator.pushNamed(
+                  context, '/payment-planning-page'); // nanti bisa diganti
             }
           : trailing == null
               ? () => _openModal(context, title)
