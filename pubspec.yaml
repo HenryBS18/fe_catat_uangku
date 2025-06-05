@@ -41,6 +41,8 @@ dependencies:
   camera: ^0.11.1
   speech_to_text: ^7.0.0
   shared_preferences: ^2.5.3
+  mockito: ^5.4.6
+  build_runner: ^2.4.15
 
 dev_dependencies:
   flutter_test:
