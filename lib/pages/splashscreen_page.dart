@@ -15,7 +15,7 @@ class _SplashscreenPageState extends State<SplashscreenPage> {
     await Future.delayed(const Duration(seconds: 1));
 
     if (token == null) {
-      Navigator.pushNamedAndRemoveUntil(context, '/auth-page', (route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/login-page', (route) => false);
       return;
     }
 

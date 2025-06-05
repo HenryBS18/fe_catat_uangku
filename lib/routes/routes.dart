@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 Map<String, Widget Function(BuildContext)> routes = {
   '/': (context) => const SplashscreenPage(),
-  '/auth-page': (context) => const AuthPage(),
+  '/login-page': (context) => const LoginPage(),
+  '/register-page': (context) => const RegisterPage(),
   '/main-page': (context) => const MainPage(),
   '/payment-planning-page': (context) => const PaymentPlanningPage(),
   '/budget-planning-page': (context) => const BudgetPlanningPage(),
