@@ -26,16 +26,17 @@ class _MainPageState extends State<MainPage> {
         },
         items: [
           BottomNavigationBarItem(
-              icon: Icon(currentIndex == 0 ? Icons.home : Icons.home_outlined),
-              label: 'Beranda'),
+            icon: Icon(currentIndex == 0 ? Icons.home : Icons.home_outlined),
+            label: 'Beranda',
+          ),
           BottomNavigationBarItem(
-              icon:
-                  Icon(currentIndex == 1 ? Icons.timer : Icons.timer_outlined),
-              label: 'Rencana'),
+            icon: Icon(currentIndex == 1 ? Icons.timer : Icons.timer_outlined),
+            label: 'Rencana',
+          ),
           BottomNavigationBarItem(
-              icon:
-                  Icon(currentIndex == 2 ? Icons.person : Icons.person_outline),
-              label: 'profile'),
+            icon: Icon(currentIndex == 2 ? Icons.person : Icons.person_outline),
+            label: 'profile',
+          ),
         ],
       ),
       floatingActionButton: const HoldActionFAB(),
