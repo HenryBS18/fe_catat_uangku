@@ -40,6 +40,7 @@ dependencies:
   image_picker: ^1.1.2
   camera: ^0.11.1
   speech_to_text: ^7.0.0
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
