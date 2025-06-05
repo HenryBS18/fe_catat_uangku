@@ -1,7 +1,33 @@
 part of 'pages.dart';
 
-class SplashscreenPage extends StatelessWidget {
+class SplashscreenPage extends StatefulWidget {
   const SplashscreenPage({Key? key}) : super(key: key);
+
+  @override
+  State<SplashscreenPage> createState() => _SplashscreenPageState();
+}
+
+class _SplashscreenPageState extends State<SplashscreenPage> {
+  void checkAuth() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (token == null) {
+      Navigator.pushNamedAndRemoveUntil(context, '/auth-page', (route) => false);
+      return;
+    }
+
+    Navigator.pushNamedAndRemoveUntil(context, '/main-page', (route) => false);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    checkAuth();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +53,7 @@ class SplashscreenPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-             Stack(
+              Stack(
                 alignment: Alignment.center,
                 clipBehavior: Clip.none,
                 children: [
@@ -38,7 +64,7 @@ class SplashscreenPage extends StatelessWidget {
                   ),
                   SvgPicture.asset(
                     'lib/assets/icons/logo.svg',
-                    width: 32,  
+                    width: 32,
                     height: 32,
                   ),
                 ],
