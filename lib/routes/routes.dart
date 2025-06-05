@@ -2,6 +2,8 @@ import 'package:fe_catat_uangku/pages/pages.dart';
 import 'package:flutter/material.dart';
 
 Map<String, Widget Function(BuildContext)> routes = {
+  '/': (context) => const SplashscreenPage(),
+  '/auth-page': (context) => const AuthPage(),
   '/main-page': (context) => const MainPage(),
   '/payment-planning-page': (context) => const PaymentPlanningPage(),
   '/budget-planning-page': (context) => const BudgetPlanningPage(),

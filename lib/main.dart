@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: const ColorScheme.light(primary: CustomColors.primary, surface: Colors.white),
       ),
       routes: routes,
-      initialRoute: '/main-page',
+      initialRoute: '/',
       debugShowCheckedModeBanner: false,
     );
   }
