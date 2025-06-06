@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:fe_catat_uangku/models/transaction.dart';
 import 'package:fe_catat_uangku/utils/base_api.dart';
 import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 
 class TransactionService {
   final BaseApi api = BaseApi();
@@ -145,5 +149,35 @@ class TransactionService {
     }
 
     throw Exception("Gagal mengambil summary transaksi");
+  }
+
+  Future<Map<String, dynamic>> scanReceipt(File imageFile) async {
+    final stream = http.ByteStream(imageFile.openRead());
+    final length = await imageFile.length();
+    final mimeType = lookupMimeType(imageFile.path) ?? 'image/jpeg';
+    final typeParts = mimeType.split('/');
+
+    final multipartFile = http.MultipartFile(
+      'image',
+      stream,
+      length,
+      filename: imageFile.path.split('/').last,
+      contentType: MediaType(typeParts[0], typeParts[1]), // ⬅️ ini penting!
+    );
+
+    final response = await api.postMultipart(
+      '/scan-receipt',
+      files: [multipartFile],
+    );
+
+    if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      final Map<String, dynamic> result = jsonDecode(responseBody);
+      return result['transaction']; // contains: amount, category, date, note
+    } else {
+      final errorBody = await response.stream.bytesToString();
+      final decodedError = jsonDecode(errorBody);
+      throw Exception(decodedError['error'] ?? 'Gagal membaca nota');
+    }
   }
 }

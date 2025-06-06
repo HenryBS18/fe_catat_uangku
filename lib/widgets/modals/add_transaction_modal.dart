@@ -1,7 +1,9 @@
 part of '../widgets.dart';
 
 class AddTransactionPage extends StatefulWidget {
-  const AddTransactionPage({super.key});
+  final Map<String, dynamic>? initialData;
+
+  const AddTransactionPage({super.key, this.initialData});
 
   @override
   State<AddTransactionPage> createState() => _AddTransactionPageState();
@@ -14,15 +16,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   String? noteError;
 
   String selectedWallet = 'Tunai';
+  String? selectedWalletId;
   String selectedCategory = 'Makanan & Minuman';
   DateTime selectedDate = DateTime.now();
-
-  final List<String> dummyWallets = [
-    'Tunai',
-    'Bank BCA',
-    'Bank Mandiri',
-    'e-Wallet OVO',
-  ];
 
   final List<String> dummyCategories = [
     'Makanan & Minuman',
@@ -36,12 +32,87 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   @override
   void initState() {
     super.initState();
-    noteController.addListener(() {
-      setState(() {
-        noteError =
-            noteController.text.length > 50 ? 'Maksimal 50 karakter' : null;
-      });
+
+    final data = widget.initialData;
+    if (data != null) {
+      final amount = data['amount'];
+      if (amount != null) {
+        amountController.text =
+            ThousandsSeparatorInputFormatter.formatNumber(amount);
+      }
+      noteController.text = data['note'] ?? '';
+      selectedCategory = data['category'] ?? selectedCategory;
+      selectedDate = DateTime.tryParse(data['date'] ?? '') ?? DateTime.now();
+
+      // Set type (income/expense)
+      final type = data['type']?.toLowerCase();
+      if (type == 'income') {
+        isIncome = true;
+      } else if (type == 'expense') {
+        isIncome = false;
+      }
+    }
+    final state = context.read<WalletBloc>().state;
+    if (state is WalletLoaded && state.wallets.isNotEmpty) {
+      final sorted = [...state.wallets]
+        ..sort((a, b) => a.createdAt.compareTo(b.createdAt)); // ⬅️ perbaikan
+      final oldestWallet = sorted.first;
+
+      selectedWallet = oldestWallet.name;
+      selectedWalletId = oldestWallet.id;
+    }
+  }
+
+  bool isLoading = false;
+
+  void _saveTransaction() async {
+    if (amountController.text.isEmpty ||
+        int.tryParse(amountController.text.replaceAll('.', '')) == null ||
+        int.parse(amountController.text.replaceAll('.', '')) <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Jumlah tidak boleh kosong atau nol')),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
     });
+
+    try {
+      final TransactionService transactionService = TransactionService();
+      if (selectedWalletId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pilih dompet terlebih dahulu')),
+        );
+        return;
+      }
+      final transaction = TransactionModel(
+        walletId: selectedWalletId!, // Hard Code sementara
+        type: isIncome ? 'income' : 'expense',
+        amount: int.parse(amountController.text.replaceAll('.', '')),
+        category: selectedCategory,
+        date: selectedDate.toIso8601String(),
+        note: noteController.text,
+      );
+
+      final bool isSuccess =
+          await transactionService.createTransaction(transaction);
+
+      if (isSuccess) {
+        Navigator.pop(context); // close modal/page
+        CustomSnackbar.showSuccess(context, "Transaksi berhasil di simpan");
+        return;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan transaksi: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -144,16 +215,26 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                               context: context,
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
-                              builder: (_) => WalletSelectionModal(
-                                wallets: dummyWallets,
-                                onSelected: (value) {
-                                  setState(() => selectedWallet = value);
-                                },
-                              ),
+                              builder: (_) {
+                                return BlocProvider.value(
+                                  value: context.read<WalletBloc>()
+                                    ..add(FetchWallets()),
+                                  child: WalletSelectionModal(
+                                    onSelected: (wallet) {
+                                      setState(() {
+                                        selectedWallet = wallet.name;
+                                        selectedWalletId =
+                                            wallet.id; // <- tambahkan ini
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
                             );
                           },
                         ),
-                        const Divider(height: 32),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         Row(
                           children: [
                             const Icon(Icons.attach_money),
@@ -174,7 +255,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             ),
                           ],
                         ),
-                        const Divider(height: 32),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(Icons.category),
@@ -195,7 +277,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             );
                           },
                         ),
-                        const Divider(height: 32),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         GestureDetector(
                           onTap: () async {
                             final result = await showModalBottomSheet<String>(
@@ -229,7 +312,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             ],
                           ),
                         ),
-                        const Divider(height: 32),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(Icons.calendar_month),
@@ -255,24 +339,16 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
-                    onPressed: () {
-                      print('==== DATA TRANSAKSI ====');
-                      print('Tipe: ${isIncome ? 'Income' : 'Expense'}');
-                      print('Wallet: $selectedWallet');
-                      print('Jumlah: ${amountController.text}');
-                      print('Kategori: $selectedCategory');
-                      print('Catatan: ${noteController.text}');
-                      print('Tanggal: ${selectedDate.toIso8601String()}');
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.arrow_forward),
-                    label: const Text("Selanjutnya"),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    onPressed: isLoading ? null : _saveTransaction,
+                    icon: isLoading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Icon(Icons.arrow_forward),
+                    label: Text(isLoading ? 'Menyimpan...' : 'Selanjutnya'),
                   ),
                   const SizedBox(height: 24),
                 ],
@@ -286,7 +362,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 }
 
 class AddTransactionPageModal extends StatelessWidget {
-  const AddTransactionPageModal({super.key});
+  final Map<String, dynamic>? initialData;
+
+  const AddTransactionPageModal({super.key, this.initialData});
 
   @override
   Widget build(BuildContext context) {
@@ -294,12 +372,11 @@ class AddTransactionPageModal extends StatelessWidget {
       expand: false,
       initialChildSize: 0.95,
       maxChildSize: 0.95,
-      minChildSize: 0.5,
-      builder: (_, controller) {
+      builder: (_, __) {
         return ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           child: Scaffold(
-            body: AddTransactionPage(),
+            body: AddTransactionPage(initialData: initialData), // ⬅️ disisipkan
           ),
         );
       },

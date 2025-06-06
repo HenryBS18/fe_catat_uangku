@@ -36,8 +36,10 @@ class UserService {
     final Map<String, dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
+      final String token = data['token'];
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('token', data['token']);
+      print('Registration successful, token: $token');
 
       return true;
     }
