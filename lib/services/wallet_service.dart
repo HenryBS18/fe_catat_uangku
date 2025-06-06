@@ -8,10 +8,10 @@ class WalletService {
 
   WalletModel fromJson(Map<String, dynamic> json) {
     return WalletModel(
-      id: json['_id'],
-      name: json['name'],
-      balance: json['balance'],
-    );
+        id: json['_id'],
+        name: json['name'],
+        balance: json['balance'],
+        createdAt: DateTime.parse(json['createdAt']));
   }
 
   Map<String, dynamic> toJson(WalletModel wallet) {

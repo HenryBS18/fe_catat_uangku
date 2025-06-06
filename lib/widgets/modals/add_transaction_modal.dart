@@ -1,7 +1,9 @@
 part of '../widgets.dart';
 
 class AddTransactionPage extends StatefulWidget {
-  const AddTransactionPage({super.key});
+  final Map<String, dynamic>? initialData;
+
+  const AddTransactionPage({super.key, this.initialData});
 
   @override
   State<AddTransactionPage> createState() => _AddTransactionPageState();
@@ -30,12 +32,35 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   @override
   void initState() {
     super.initState();
-    noteController.addListener(() {
-      setState(() {
-        noteError =
-            noteController.text.length > 50 ? 'Maksimal 50 karakter' : null;
-      });
-    });
+
+    final data = widget.initialData;
+    if (data != null) {
+      final amount = data['amount'];
+      if (amount != null) {
+        amountController.text =
+            ThousandsSeparatorInputFormatter.formatNumber(amount);
+      }
+      noteController.text = data['note'] ?? '';
+      selectedCategory = data['category'] ?? selectedCategory;
+      selectedDate = DateTime.tryParse(data['date'] ?? '') ?? DateTime.now();
+
+      // Set type (income/expense)
+      final type = data['type']?.toLowerCase();
+      if (type == 'income') {
+        isIncome = true;
+      } else if (type == 'expense') {
+        isIncome = false;
+      }
+    }
+    final state = context.read<WalletBloc>().state;
+    if (state is WalletLoaded && state.wallets.isNotEmpty) {
+      final sorted = [...state.wallets]
+        ..sort((a, b) => a.createdAt.compareTo(b.createdAt)); // ⬅️ perbaikan
+      final oldestWallet = sorted.first;
+
+      selectedWallet = oldestWallet.name;
+      selectedWalletId = oldestWallet.id;
+    }
   }
 
   bool isLoading = false;
@@ -76,9 +101,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
       if (isSuccess) {
         Navigator.pop(context); // close modal/page
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Transaksi berhasil disimpan')),
-        );
+        CustomSnackbar.showSuccess(context, "Transaksi berhasil di simpan");
         return;
       }
     } catch (e) {
@@ -210,7 +233,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             );
                           },
                         ),
-                        const Divider(height: 32),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         Row(
                           children: [
                             const Icon(Icons.attach_money),
@@ -231,7 +255,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             ),
                           ],
                         ),
-                        const Divider(height: 32),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(Icons.category),
@@ -252,7 +277,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             );
                           },
                         ),
-                        const Divider(height: 32),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         GestureDetector(
                           onTap: () async {
                             final result = await showModalBottomSheet<String>(
@@ -286,7 +312,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             ],
                           ),
                         ),
-                        const Divider(height: 32),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(Icons.calendar_month),
@@ -335,7 +362,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 }
 
 class AddTransactionPageModal extends StatelessWidget {
-  const AddTransactionPageModal({super.key});
+  final Map<String, dynamic>? initialData;
+
+  const AddTransactionPageModal({super.key, this.initialData});
 
   @override
   Widget build(BuildContext context) {
@@ -343,12 +372,11 @@ class AddTransactionPageModal extends StatelessWidget {
       expand: false,
       initialChildSize: 0.95,
       maxChildSize: 0.95,
-      minChildSize: 0.5,
-      builder: (_, controller) {
+      builder: (_, __) {
         return ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           child: Scaffold(
-            body: AddTransactionPage(),
+            body: AddTransactionPage(initialData: initialData), // ⬅️ disisipkan
           ),
         );
       },

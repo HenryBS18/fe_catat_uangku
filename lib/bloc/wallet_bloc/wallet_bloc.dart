@@ -12,6 +12,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(WalletLoading());
       try {
         final wallets = await walletService.getWallets();
+        wallets
+            .sort((a, b) => b.createdAt.compareTo(a.createdAt)); // terbaru dulu
+        emit(WalletLoaded(wallets));
+
         emit(WalletLoaded(wallets));
       } catch (e) {
         emit(WalletError(e.toString()));

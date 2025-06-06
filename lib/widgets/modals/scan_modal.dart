@@ -21,6 +21,16 @@ class _ScanModalState extends State<ScanModal> {
     _initCamera();
   }
 
+  Future<void> _pickFromGallery() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      print("Picked image: ${picked.path}");
+      setState(() => _imageFile = File(picked.path));
+    } else {
+      print("No image picked");
+    }
+  }
+
   Future<void> _initCamera() async {
     _cameras = await availableCameras();
 
@@ -65,17 +75,35 @@ class _ScanModalState extends State<ScanModal> {
     setState(() => _imageFile = File(file.path));
   }
 
-  Future<void> _pickFromGallery() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() => _imageFile = File(picked.path));
-    }
-  }
-
   @override
   void dispose() {
     _controller?.dispose();
     super.dispose();
+  }
+
+  void _handleScanAndNavigate() async {
+    if (_imageFile == null) return;
+
+    try {
+      final result = await TransactionService().scanReceipt(_imageFile!);
+
+      // Tutup modal kamera dulu
+      Navigator.pop(context);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Navigasi ke AddTransactionPage dengan hasil scan
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => AddTransactionPageModal(initialData: result),
+      );
+    } catch (e) {
+      CustomSnackbar.showError(context, 'Gagal membaca nota');
+      setState(() {
+        _imageFile = null;
+      });
+    }
   }
 
   @override
@@ -145,9 +173,7 @@ class _ScanModalState extends State<ScanModal> {
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),
                           ),
-                          onPressed: () {
-                            Navigator.pop(context, _imageFile);
-                          },
+                          onPressed: _handleScanAndNavigate,
                         ),
                 )
               ],
