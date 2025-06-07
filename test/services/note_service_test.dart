@@ -1,22 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fe_catat_uangku/models/transaction.dart';
+import 'package:fe_catat_uangku/models/note.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../mocks/mock_transaction_service.dart';
+import '../mocks/mock_note_service.dart';
 
 void main() {
-  late MockTransactionService transactionService;
+  late MockNoteService noteService;
 
   setUp(() async {
     // Menyiapkan mock shared preferences dan service sebelum tiap test
     SharedPreferences.setMockInitialValues({});
-    transactionService = MockTransactionService();
+    noteService = MockNoteService();
   });
 
-  group('Mock Test - TransactionService', () {
+  group('Mock Test - NoteService', () {
     test('Create transaction should return true', () async {
       // Tujuan: Menguji apakah transaksi berhasil dibuat
-      final transaction = TransactionModel(
+      final transaction = NoteModel(
         walletId: 'mockWalletId',
         type: 'expense',
         amount: 15000,
@@ -25,7 +25,7 @@ void main() {
         note: 'ayam penyet',
       );
 
-      final result = await transactionService.createTransaction(transaction);
+      final result = await noteService.createNote(transaction);
 
       // Hasil yang diharapkan: true
       expect(result, isTrue);
@@ -34,7 +34,7 @@ void main() {
     test('Get transaction by wallet should return non-empty list', () async {
       // Tujuan: Memastikan transaksi dapat diambil berdasarkan walletId
       final walletId = 'mockWalletId';
-      await transactionService.createTransaction(TransactionModel(
+      await noteService.createNote(NoteModel(
         walletId: walletId,
         type: 'income',
         amount: 100000,
@@ -43,17 +43,17 @@ void main() {
         note: 'Gaji bulanan',
       ));
 
-      final result = await transactionService.getTransactionsByWallet(walletId);
+      final result = await noteService.getNotesByWallet(walletId);
 
       // Hasil yang diharapkan: list tidak kosong dan sesuai kategori
-      expect(result, isA<List<TransactionModel>>());
+      expect(result, isA<List<NoteModel>>());
       expect(result.length, greaterThan(0));
       expect(result.first.category, equals('gaji'));
     });
 
     test('Update transaction should return true', () async {
       // Tujuan: Menguji apakah transaksi dapat diperbarui
-      final transaction = TransactionModel(
+      final transaction = NoteModel(
         walletId: 'mockWalletId',
         type: 'expense',
         amount: 20000,
@@ -62,14 +62,13 @@ void main() {
         note: 'ayam goreng',
       );
 
-      await transactionService.createTransaction(transaction);
+      await noteService.createNote(transaction);
       final created =
-          (await transactionService.getTransactionsByWallet('mockWalletId'))
-              .first;
+          (await noteService.getNotesByWallet('mockWalletId')).first;
 
-      final updated = await transactionService.updateTransaction(
+      final updated = await noteService.updateNote(
         created.id!,
-        TransactionModel(
+        NoteModel(
           walletId: created.walletId,
           type: 'expense',
           amount: 25000,
@@ -85,7 +84,7 @@ void main() {
 
     test('Delete transaction should return true', () async {
       // Tujuan: Menguji apakah transaksi bisa dihapus
-      final transaction = TransactionModel(
+      final transaction = NoteModel(
         walletId: 'mockWalletId',
         type: 'expense',
         amount: 10000,
@@ -94,12 +93,11 @@ void main() {
         note: 'es teh',
       );
 
-      await transactionService.createTransaction(transaction);
+      await noteService.createNote(transaction);
       final created =
-          (await transactionService.getTransactionsByWallet('mockWalletId'))
-              .first;
+          (await noteService.getNotesByWallet('mockWalletId')).first;
 
-      final result = await transactionService.deleteTransaction(created.id!);
+      final result = await noteService.deleteNote(created.id!);
 
       // Hasil yang diharapkan: true
       expect(result, isTrue);
@@ -107,7 +105,7 @@ void main() {
 
     test('Get transaction summary should return total amount', () async {
       // Tujuan: Menguji ringkasan transaksi berdasarkan filter
-      await transactionService.createTransaction(TransactionModel(
+      await noteService.createNote(NoteModel(
         walletId: 'mockWalletId',
         type: 'expense',
         amount: 5000,
@@ -116,8 +114,8 @@ void main() {
         note: 'ciki',
       ));
 
-      final summary = await transactionService
-          .getTransactionSummary(filters: {'type': 'expense'});
+      final summary =
+          await noteService.getNoteSummary(filters: {'type': 'expense'});
 
       // Hasil yang diharapkan: total > 0
       expect(summary['summary']['total'], greaterThan(0));

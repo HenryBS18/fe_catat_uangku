@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:fe_catat_uangku/models/transaction.dart';
+import 'package:fe_catat_uangku/models/note.dart';
 import 'package:fe_catat_uangku/utils/base_api.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
-class TransactionService {
+class NoteService {
   final BaseApi api = BaseApi();
 
-  Future<bool> createTransaction(TransactionModel transaction) async {
+  Future<bool> createNote(NoteModel transaction) async {
     final data = {
       'walletId': transaction.walletId,
       'type': transaction.type,
@@ -20,7 +20,7 @@ class TransactionService {
       'note': transaction.note,
     };
 
-    final Response response = await api.post('/transactions', data: data);
+    final Response response = await api.post('/notes', data: data);
     final Map<String, dynamic> result = jsonDecode(response.body);
 
     if (response.statusCode == 201) {
@@ -30,8 +30,7 @@ class TransactionService {
     throw Exception(result['message']);
   }
 
-  Future<bool> updateTransaction(
-      String id, TransactionModel transaction) async {
+  Future<bool> updateNote(String id, NoteModel transaction) async {
     final data = {
       'type': transaction.type,
       'amount': transaction.amount,
@@ -40,7 +39,7 @@ class TransactionService {
       'note': transaction.note,
     };
 
-    final Response response = await api.put('/transactions/$id', data: data);
+    final Response response = await api.put('/notes/$id', data: data);
     final Map<String, dynamic> result = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -50,8 +49,8 @@ class TransactionService {
     throw Exception(result['message']);
   }
 
-  Future<bool> deleteTransaction(String id) async {
-    final Response response = await api.delete('/transactions/$id');
+  Future<bool> deleteNote(String id) async {
+    final Response response = await api.delete('/notes/$id');
     final Map<String, dynamic> result = jsonDecode(response.body);
 
     if (response.statusCode != 200) {
@@ -60,14 +59,13 @@ class TransactionService {
     return true;
   }
 
-  Future<List<TransactionModel>> getTransactionsByWallet(
-      String walletId) async {
-    final Response response = await api.get('/transactions/wallet/$walletId');
+  Future<List<NoteModel>> getNotesByWallet(String walletId) async {
+    final Response response = await api.get('/notes/wallet/$walletId');
     final List<dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
       return data
-          .map((json) => TransactionModel(
+          .map((json) => NoteModel(
                 id: json['_id'],
                 walletId: json['walletId'],
                 type: json['type'],
@@ -82,7 +80,7 @@ class TransactionService {
     throw Exception("Gagal mengambil transaksi");
   }
 
-  Future<List<TransactionModel>> getAllTransactions(
+  Future<List<NoteModel>> getAllNotes(
       {String? type,
       String? category,
       String? startDate,
@@ -96,13 +94,13 @@ class TransactionService {
     }
 
     final String queryString = Uri(queryParameters: queryParams).query;
-    final Response response = await api
-        .get('/transactions${queryString.isNotEmpty ? '?$queryString' : ''}');
+    final Response response =
+        await api.get('/notes${queryString.isNotEmpty ? '?$queryString' : ''}');
     final List<dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
       return data
-          .map((json) => TransactionModel(
+          .map((json) => NoteModel(
                 id: json['_id'],
                 walletId: json['walletId'],
                 type: json['type'],
@@ -117,12 +115,12 @@ class TransactionService {
     throw Exception("Gagal mengambil semua transaksi");
   }
 
-  Future<TransactionModel> getTransactionById(String id) async {
-    final Response response = await api.get('/transactions/$id');
+  Future<NoteModel> getNoteById(String id) async {
+    final Response response = await api.get('/notes/$id');
     final Map<String, dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return TransactionModel(
+      return NoteModel(
         id: data['_id'],
         walletId: data['walletId'],
         type: data['type'],
@@ -136,12 +134,12 @@ class TransactionService {
     throw Exception("Gagal mengambil transaksi");
   }
 
-  Future<Map<String, dynamic>> getTransactionSummary(
+  Future<Map<String, dynamic>> getNoteSummary(
       {Map<String, String>? filters}) async {
     final String queryString =
         filters != null ? Uri(queryParameters: filters).query : '';
-    final Response response = await api.get(
-        '/transactions/summary${queryString.isNotEmpty ? '?$queryString' : ''}');
+    final Response response = await api
+        .get('/notes/summary${queryString.isNotEmpty ? '?$queryString' : ''}');
     final Map<String, dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -162,7 +160,7 @@ class TransactionService {
       stream,
       length,
       filename: imageFile.path.split('/').last,
-      contentType: MediaType(typeParts[0], typeParts[1]), // ⬅️ ini penting!
+      contentType: MediaType(typeParts[0], typeParts[1]),
     );
 
     final response = await api.postMultipart(
@@ -170,13 +168,17 @@ class TransactionService {
       files: [multipartFile],
     );
 
+    final responseBody = await response.stream.bytesToString();
+
     if (response.statusCode == 200) {
-      final responseBody = await response.stream.bytesToString();
-      final Map<String, dynamic> result = jsonDecode(responseBody);
-      return result['transaction']; // contains: amount, category, date, note
+      final decoded = jsonDecode(responseBody);
+      if (decoded['note'] is Map<String, dynamic>) {
+        return decoded['note'];
+      } else {
+        throw Exception("Field 'note' kosong atau tidak sesuai format");
+      }
     } else {
-      final errorBody = await response.stream.bytesToString();
-      final decodedError = jsonDecode(errorBody);
+      final decodedError = jsonDecode(responseBody);
       throw Exception(decodedError['error'] ?? 'Gagal membaca nota');
     }
   }

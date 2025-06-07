@@ -5,7 +5,7 @@ class ProfilePage extends StatelessWidget {
   final String email;
   final String accountType;
   final String joinedDate;
-  final int totalTransactions;
+  final int totalNotes;
 
   const ProfilePage({
     super.key,
@@ -13,7 +13,7 @@ class ProfilePage extends StatelessWidget {
     this.email = 'putrataufik@gmail.com',
     this.accountType = 'Gratis',
     this.joinedDate = '12 Februari 2024',
-    this.totalTransactions = 134,
+    this.totalNotes = 134,
   });
 
   void _handleLogout(BuildContext context) async {
@@ -139,7 +139,7 @@ class ProfilePage extends StatelessWidget {
               _itemTile(
                   context, Icons.account_circle, 'Tipe Akun', accountType),
               _itemTile(context, Icons.receipt, 'Jumlah Transaksi',
-                  '$totalTransactions transaksi dicatat'),
+                  '$totalNotes transaksi dicatat'),
             ],
           ),
 

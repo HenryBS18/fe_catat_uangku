@@ -1,15 +1,15 @@
 part of '../widgets.dart';
 
-class AddTransactionPage extends StatefulWidget {
+class AddNotePage extends StatefulWidget {
   final Map<String, dynamic>? initialData;
 
-  const AddTransactionPage({super.key, this.initialData});
+  const AddNotePage({super.key, this.initialData});
 
   @override
-  State<AddTransactionPage> createState() => _AddTransactionPageState();
+  State<AddNotePage> createState() => _AddNotePageState();
 }
 
-class _AddTransactionPageState extends State<AddTransactionPage> {
+class _AddNotePageState extends State<AddNotePage> {
   bool isIncome = true;
   final TextEditingController amountController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
@@ -65,7 +65,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   bool isLoading = false;
 
-  void _saveTransaction() async {
+  void _saveNote() async {
     if (amountController.text.isEmpty ||
         int.tryParse(amountController.text.replaceAll('.', '')) == null ||
         int.parse(amountController.text.replaceAll('.', '')) <= 0) {
@@ -80,14 +80,14 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     });
 
     try {
-      final TransactionService transactionService = TransactionService();
+      final NoteService noteService = NoteService();
       if (selectedWalletId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Pilih dompet terlebih dahulu')),
         );
         return;
       }
-      final transaction = TransactionModel(
+      final note = NoteModel(
         walletId: selectedWalletId!, // Hard Code sementara
         type: isIncome ? 'income' : 'expense',
         amount: int.parse(amountController.text.replaceAll('.', '')),
@@ -96,8 +96,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         note: noteController.text,
       );
 
-      final bool isSuccess =
-          await transactionService.createTransaction(transaction);
+      final bool isSuccess = await noteService.createNote(note);
 
       if (isSuccess) {
         Navigator.pop(context); // close modal/page
@@ -339,7 +338,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
-                    onPressed: isLoading ? null : _saveTransaction,
+                    onPressed: isLoading ? null : _saveNote,
                     icon: isLoading
                         ? const SizedBox(
                             width: 16,
@@ -361,10 +360,10 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   }
 }
 
-class AddTransactionPageModal extends StatelessWidget {
+class AddNotePageModal extends StatelessWidget {
   final Map<String, dynamic>? initialData;
 
-  const AddTransactionPageModal({super.key, this.initialData});
+  const AddNotePageModal({super.key, this.initialData});
 
   @override
   Widget build(BuildContext context) {
@@ -376,7 +375,7 @@ class AddTransactionPageModal extends StatelessWidget {
         return ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           child: Scaffold(
-            body: AddTransactionPage(initialData: initialData), // ⬅️ disisipkan
+            body: AddNotePage(initialData: initialData), // ⬅️ disisipkan
           ),
         );
       },

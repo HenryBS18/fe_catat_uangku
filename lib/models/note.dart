@@ -1,4 +1,4 @@
-class TransactionModel {
+class NoteModel {
   final String? id;
   final String walletId;
   final String type;
@@ -7,7 +7,7 @@ class TransactionModel {
   final String date;
   final String? note;
 
-  TransactionModel({
+  NoteModel({
     this.id,
     required this.walletId,
     required this.type,

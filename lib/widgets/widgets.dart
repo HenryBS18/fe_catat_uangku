@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
-import 'package:fe_catat_uangku/models/transaction.dart';
+import 'package:fe_catat_uangku/models/note.dart';
 import 'package:fe_catat_uangku/models/wallet.dart';
-import 'package:fe_catat_uangku/services/transaction_service.dart';
+import 'package:fe_catat_uangku/services/note_service.dart';
 import 'package:fe_catat_uangku/utils/capitalize_first_letter_formatter.dart';
 import 'package:fe_catat_uangku/utils/custom_colors.dart';
 import 'package:fe_catat_uangku/utils/custom_snackbar.dart';
@@ -28,7 +28,7 @@ part 'modals/categories_selection_modal.dart';
 part 'modals/notes_section_modal.dart';
 
 part 'modals/voice_record_modal.dart';
-part 'modals/add_transaction_modal.dart';
+part 'modals/add_note_modal.dart';
 part 'modals/scan_modal.dart';
 
 part 'input/input.dart';

@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('AddTransactionPage Widget Test', () {
+  group('AddNotePage Widget Test', () {
     testWidgets('Should display title and buttons correctly',
         (WidgetTester tester) async {
       // Tujuan: Memastikan elemen UI utama muncul
-      await tester
-          .pumpWidget(const MaterialApp(home: AddTransactionPageModal()));
+      await tester.pumpWidget(const MaterialApp(home: AddNotePageModal()));
 
       // Hasil yang diharapkan: judul dan tombol Income/Expense ditemukan
       expect(find.text('Tambah Catatan'), findsOneWidget);
@@ -19,7 +18,7 @@ void main() {
     testWidgets('Should change selected type on tap',
         (WidgetTester tester) async {
       // Tujuan: Memastikan tombol "Expense" bisa diklik dan berubah status
-      await tester.pumpWidget(const MaterialApp(home: AddTransactionPage()));
+      await tester.pumpWidget(const MaterialApp(home: AddNotePage()));
 
       await tester.tap(find.text('Expense'));
       await tester.pumpAndSettle();
@@ -36,7 +35,7 @@ void main() {
     testWidgets('Should input amount and show formatted result',
         (WidgetTester tester) async {
       // Tujuan: Memastikan input angka diformat dengan benar (pakai separator)
-      await tester.pumpWidget(const MaterialApp(home: AddTransactionPage()));
+      await tester.pumpWidget(const MaterialApp(home: AddNotePage()));
 
       final amountField = find.byType(TextField).first;
       await tester.enterText(amountField, '10000');
@@ -54,7 +53,7 @@ void main() {
     testWidgets('Should open WalletSelectionModal when wallet ListTile tapped',
         (WidgetTester tester) async {
       // Tujuan: Memastikan modal pemilihan dompet terbuka saat ditekan
-      await tester.pumpWidget(const MaterialApp(home: AddTransactionPage()));
+      await tester.pumpWidget(const MaterialApp(home: AddNotePage()));
 
       await tester.tap(find.byIcon(Icons.account_balance_wallet));
       await tester.pumpAndSettle();
@@ -67,7 +66,7 @@ void main() {
         'Should open CategorySelectionModal when category ListTile tapped',
         (WidgetTester tester) async {
       // Tujuan: Memastikan modal pemilihan kategori terbuka
-      await tester.pumpWidget(const MaterialApp(home: AddTransactionPage()));
+      await tester.pumpWidget(const MaterialApp(home: AddNotePage()));
 
       await tester.tap(find.byIcon(Icons.category));
       await tester.pumpAndSettle();
@@ -79,7 +78,7 @@ void main() {
     testWidgets('Should open NotesSectionModal when note row tapped',
         (WidgetTester tester) async {
       // Tujuan: Memastikan modal input catatan terbuka
-      await tester.pumpWidget(const MaterialApp(home: AddTransactionPage()));
+      await tester.pumpWidget(const MaterialApp(home: AddNotePage()));
 
       await tester.tap(find.byIcon(Icons.message));
       await tester.pumpAndSettle();
