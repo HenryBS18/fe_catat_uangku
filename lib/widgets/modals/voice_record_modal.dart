@@ -18,7 +18,6 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
     _initSpeech();
   }
 
-  /// Inisialisasi speech recognition
   Future<void> _initSpeech() async {
     await _speech.initialize(
       onStatus: (status) {
@@ -45,6 +44,27 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
   void _stopListening() {
     _speech.stop();
     setState(() => _isListening = false);
+  }
+
+  void _handleSubmitVoice() async {
+    if (_lastWords.isEmpty) return;
+
+    try {
+      final noteData = await NoteService().voiceToNote(_lastWords);
+
+      if (!mounted) return;
+      Navigator.pop(context);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => AddNotePageModal(initialData: noteData),
+      );
+    } catch (e) {
+      CustomSnackbar.showError(context, 'Gagal memproses suara: $e');
+    }
   }
 
   @override
@@ -78,7 +98,6 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
             ),
             body: Column(
               children: [
-                // Panduan
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Card(
@@ -104,10 +123,7 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
                     ),
                   ),
                 ),
-
                 const Spacer(),
-
-                // Card Voice Input (50% layar)
                 Container(
                   height: height * 0.5,
                   padding: const EdgeInsets.all(20),
@@ -125,7 +141,6 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Hasil Teks
                       Container(
                         padding: const EdgeInsets.all(12),
                         height: 100,
@@ -138,8 +153,6 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Tombol Mic
                       Center(
                         child: GestureDetector(
                           onLongPress: _startListening,
@@ -175,23 +188,12 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
                         style:
                             const TextStyle(fontSize: 14, color: Colors.grey),
                       ),
-
                       const Spacer(),
-
                       Padding(
                         padding: const EdgeInsets.only(bottom: 30),
                         child: ElevatedButton.icon(
-                          onPressed: _lastWords.isEmpty
-                              ? null
-                              : () {
-                                  /// Kembalikan hasil pengenalan suara
-                                  /// Format Map agar mudah diproses BLoC atau API
-                                  debugPrint("=== HASIL VOICE INPUT ===");
-                                  debugPrint(_lastWords);
-                                  Navigator.of(context).pop({
-                                    'voiceText': _lastWords,
-                                  });
-                                },
+                          onPressed:
+                              _lastWords.isEmpty ? null : _handleSubmitVoice,
                           icon: const Icon(Icons.arrow_forward),
                           label: const Text("Selanjutnya"),
                           style: ElevatedButton.styleFrom(
