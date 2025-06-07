@@ -214,7 +214,7 @@ class _HoldActionFABState extends State<HoldActionFAB> {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (context) => const AddTransactionPageModal(),
+        builder: (context) => const AddNotePageModal(),
       );
     } else if (label == 'Scan') {
       showModalBottomSheet(

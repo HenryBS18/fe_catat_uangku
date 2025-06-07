@@ -1,10 +1,10 @@
-import 'package:fe_catat_uangku/models/transaction.dart';
+import 'package:fe_catat_uangku/models/note.dart';
 
-class MockTransactionService {
-  final List<TransactionModel> _mockDatabase = [];
+class MockNoteService {
+  final List<NoteModel> _mockDatabase = [];
 
-  Future<bool> createTransaction(TransactionModel transaction) async {
-    final mock = TransactionModel(
+  Future<bool> createNote(NoteModel transaction) async {
+    final mock = NoteModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       walletId: transaction.walletId,
       type: transaction.type,
@@ -17,12 +17,11 @@ class MockTransactionService {
     return true;
   }
 
-  Future<bool> updateTransaction(
-      String id, TransactionModel transaction) async {
+  Future<bool> updateNote(String id, NoteModel transaction) async {
     final index = _mockDatabase.indexWhere((t) => t.id == id);
     if (index == -1) throw Exception("Transaksi tidak ditemukan");
 
-    _mockDatabase[index] = TransactionModel(
+    _mockDatabase[index] = NoteModel(
       id: id,
       walletId: transaction.walletId,
       type: transaction.type,
@@ -34,19 +33,18 @@ class MockTransactionService {
     return true;
   }
 
-  Future<bool> deleteTransaction(String id) async {
+  Future<bool> deleteNote(String id) async {
     final index = _mockDatabase.indexWhere((t) => t.id == id);
     if (index == -1) throw Exception("Transaksi tidak ditemukan");
     _mockDatabase.removeAt(index);
     return true;
   }
 
-  Future<List<TransactionModel>> getTransactionsByWallet(
-      String walletId) async {
+  Future<List<NoteModel>> getNotesByWallet(String walletId) async {
     return _mockDatabase.where((t) => t.walletId == walletId).toList();
   }
 
-  Future<List<TransactionModel>> getAllTransactions({
+  Future<List<NoteModel>> getAllNotes({
     String? type,
     String? category,
     String? startDate,
@@ -61,15 +59,15 @@ class MockTransactionService {
     }).toList();
   }
 
-  Future<TransactionModel> getTransactionById(String id) async {
+  Future<NoteModel> getNoteById(String id) async {
     final transaction = _mockDatabase.firstWhere((t) => t.id == id,
         orElse: () => throw Exception("Transaksi tidak ditemukan"));
     return transaction;
   }
 
-  Future<Map<String, dynamic>> getTransactionSummary(
+  Future<Map<String, dynamic>> getNoteSummary(
       {Map<String, String>? filters}) async {
-    final filtered = await getAllTransactions(
+    final filtered = await getAllNotes(
       type: filters?["type"],
       category: filters?["category"],
       startDate: filters?["startDate"],

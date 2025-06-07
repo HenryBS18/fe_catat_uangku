@@ -85,18 +85,18 @@ class _ScanModalState extends State<ScanModal> {
     if (_imageFile == null) return;
 
     try {
-      final result = await TransactionService().scanReceipt(_imageFile!);
+      final result = await NoteService().scanReceipt(_imageFile!);
 
       // Tutup modal kamera dulu
       Navigator.pop(context);
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // Navigasi ke AddTransactionPage dengan hasil scan
+      // Navigasi ke AddNotePage dengan hasil scan
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (_) => AddTransactionPageModal(initialData: result),
+        builder: (_) => AddNotePageModal(initialData: result),
       );
     } catch (e) {
       CustomSnackbar.showError(context, 'Gagal membaca nota');
