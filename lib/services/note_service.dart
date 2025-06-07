@@ -182,4 +182,23 @@ class NoteService {
       throw Exception(decodedError['error'] ?? 'Gagal membaca nota');
     }
   }
+
+  Future<Map<String, dynamic>> voiceToNote(String text) async {
+    final response = await api.post(
+      '/voice-receipt/',
+      data: {'text': text},
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      if (body['note'] is Map<String, dynamic>) {
+        return body['note'];
+      } else {
+        throw Exception("Field 'note' tidak ditemukan atau invalid");
+      }
+    } else {
+      final error = jsonDecode(response.body);
+      throw Exception(error['error'] ?? 'Gagal memproses input suara');
+    }
+  }
 }
