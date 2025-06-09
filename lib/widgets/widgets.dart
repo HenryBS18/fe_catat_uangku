@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 part 'dots_indicator.dart';
@@ -32,6 +33,7 @@ part 'modals/scan_modal.dart';
 
 part 'input/input.dart';
 part 'input/input_password.dart';
+part 'input/input_date.dart';
 part 'button.dart';
 part 'loading.dart';
 part 'error_dialog.dart';
