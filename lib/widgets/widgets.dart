@@ -34,6 +34,7 @@ part 'modals/scan_modal.dart';
 part 'input/input.dart';
 part 'input/input_password.dart';
 part 'input/input_date.dart';
+part 'input/input_text_area.dart';
 part 'button.dart';
 part 'loading.dart';
 part 'error_dialog.dart';
