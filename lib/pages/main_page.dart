@@ -9,7 +9,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int currentIndex = 0;
-  List<Widget> pages = const [HomePage(), PlanningPage()];
+  List<Widget> pages = const [HomePage(), PlanningPage(), ProfilePage()];
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +25,21 @@ class _MainPageState extends State<MainPage> {
           });
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(currentIndex == 0 ? Icons.home : Icons.home_outlined), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(currentIndex == 1 ? Icons.timer : Icons.timer_outlined), label: 'Rencana'),
+          BottomNavigationBarItem(
+            icon: Icon(currentIndex == 0 ? Icons.home : Icons.home_outlined),
+            label: 'Beranda',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(currentIndex == 1 ? Icons.timer : Icons.timer_outlined),
+            label: 'Rencana',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(currentIndex == 2 ? Icons.person : Icons.person_outline),
+            label: 'profile',
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
-        onPressed: () {},
-        child: Icon(Icons.add, size: 32),
-      ),
+      floatingActionButton: const HoldActionFAB(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
