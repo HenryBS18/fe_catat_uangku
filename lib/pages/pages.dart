@@ -18,3 +18,4 @@ part 'payment_planning_detail_page.dart';
 
 part '../widgets/hold_action_fab.dart';
 part 'profile_page.dart';
+part 'add_payment_planning_page.dart';

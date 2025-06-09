@@ -141,7 +141,9 @@ class _PaymentPlanningPageState extends State<PaymentPlanningPage> {
             right: 32,
             child: FloatingActionButton(
               shape: CircleBorder(),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/add-payment-planning-page');
+              },
               child: Icon(Icons.add, size: 32),
             ),
           )

@@ -9,7 +9,7 @@ class UserService {
   final BaseApi api = BaseApi();
 
   Future<bool> register(User user) async {
-    final Response response = await api.post('/users/register', data: {
+    final Response response = await api.post('/auth/register', data: {
       'name': user.name,
       'email': user.email,
       'password': user.password,
@@ -28,7 +28,7 @@ class UserService {
   }
 
   Future<bool> login(User user) async {
-    final Response response = await api.post('/users/login', data: {
+    final Response response = await api.post('/auth/login', data: {
       'email': user.email,
       'password': user.password,
     });
