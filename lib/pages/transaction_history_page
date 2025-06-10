@@ -1,0 +1,100 @@
+part of 'pages.dart';
+
+class TransactionHistoryPage extends StatefulWidget {
+  const TransactionHistoryPage({super.key});
+
+  @override
+  State<TransactionHistoryPage> createState() => _TransactionHistoryPageState();
+}
+
+class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
+  int currentIndex = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<NoteBloc>().add(FetchNotes());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Riwayat Transaksi'),
+      ),
+      body: BlocBuilder<NoteBloc, NoteState>(
+        builder: (context, state) {
+          if (state is NoteLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is NoteLoaded) {
+            final transactions = state.notes;
+
+            if (transactions.isEmpty) {
+              return const Center(child: Text('Tidak ada transaksi'));
+            }
+
+            return ListView.builder(
+              itemCount: transactions.length,
+              itemBuilder: (context, index) {
+                final tx = transactions[index];
+                return ListTile(
+                  leading: Icon(
+                    tx.type == 'expense'
+                        ? Icons.arrow_upward
+                        : Icons.arrow_downward,
+                    color: tx.type == 'expense' ? Colors.red : Colors.green,
+                  ),
+                  title: Text(tx.category ?? 'Tanpa kategori'),
+                  subtitle: Text(tx.note ?? ''),
+                  trailing: Text(
+                    'Rp ${tx.amount}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                );
+              },
+            );
+          } else if (state is NoteError) {
+            return Center(child: Text('Terjadi kesalahan: ${state.message}'));
+          }
+
+          return const SizedBox();
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        unselectedItemColor: Colors.black,
+        currentIndex: currentIndex,
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+
+          if (index == 0) {
+            Navigator.pushReplacementNamed(context, '/home');
+          } else if (index == 1) {
+            Navigator.pushReplacementNamed(context, '/transaction-history');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, '/profile');
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Beranda',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.timer_outlined),
+            activeIcon: Icon(Icons.timer),
+            label: 'Rencana',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+}
