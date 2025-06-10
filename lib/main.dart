@@ -1,4 +1,6 @@
+import 'package:fe_catat_uangku/bloc/user_bloc/user_bloc.dart';
 import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
+import 'package:fe_catat_uangku/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fe_catat_uangku/routes/routes.dart';
@@ -20,6 +22,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => WalletBloc(WalletService())..add(FetchWallets()),
         ),
+        BlocProvider(
+          create: (_) => UserProfileBloc(userService: UserService())
+            ..add(FetchUserProfile()),
+        )
       ],
       child: MaterialApp(
         title: 'Catat Uangku',

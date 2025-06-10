@@ -2,11 +2,33 @@ part of 'pages.dart';
 
 class PlanningPage extends StatelessWidget {
   const PlanningPage({Key? key}) : super(key: key);
+  void _handleLogout(BuildContext context) async {
+    final userService = UserService();
+    try {
+      final loggedOut = await userService.logout();
+      if (!context.mounted) return;
+
+      if (loggedOut) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login-page', (_) => false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Berhasil keluar akun')),
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal keluar akun: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Rencana', style: TextStyle(fontWeight: FontWeight.bold))),
+      appBar: AppBar(
+          title:
+              Text('Rencana', style: TextStyle(fontWeight: FontWeight.bold))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -29,11 +51,13 @@ class PlanningPage extends StatelessWidget {
                       children: [
                         Text(
                           'Rencana Pembayaran',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           'Pembayaran mendatang anda',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
@@ -53,7 +77,7 @@ class PlanningPage extends StatelessWidget {
             const SizedBox(height: 24),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, '/budget-planning-page');
+                _handleLogout(context);
               },
               child: Container(
                 padding: EdgeInsets.all(16),
@@ -69,11 +93,13 @@ class PlanningPage extends StatelessWidget {
                       children: [
                         Text(
                           'Anggaran',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           'Rencana pengeluaran anda',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
@@ -84,7 +110,8 @@ class PlanningPage extends StatelessWidget {
                         color: Colors.indigo,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(Icons.library_books, color: Colors.white, size: 48),
+                      child: Icon(Icons.library_books,
+                          color: Colors.white, size: 48),
                     )
                   ],
                 ),
