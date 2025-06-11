@@ -6,9 +6,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fe_catat_uangku/routes/routes.dart';
 import 'package:fe_catat_uangku/utils/custom_colors.dart';
 import 'package:fe_catat_uangku/services/wallet_service.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:uni_links3/uni_links.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
+  // Tangkap initial URI (cold start via catatuangku://…)
+  try {
+    final uri = await getInitialUri();
+    debugPrint('🔄 [DEBUG main] getInitialUri: $uri');
+  } catch (e) {
+    debugPrint('❌ [DEBUG main] getInitialUri error: $e');
+  }
   runApp(const MyApp());
 }
 

@@ -8,9 +8,75 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late StreamSubscription<Uri?> _sub;
+  final _subscriptionService = SubscriptionService();
+  bool _isLoading = false;
   @override
   void initState() {
     super.initState();
+    getInitialUri().then((uri) {
+      debugPrint('🔄 [ProfilePage] initialUri: $uri');
+      if (uri != null) _handleUri(uri);
+    }).catchError((e) {
+      debugPrint('❌ [ProfilePage] getInitialUri error: $e');
+    });
+    _sub = uriLinkStream.listen(
+      (Uri? uri) {
+        debugPrint('🔗 [ProfilePage] uriLinkStream fired: $uri');
+        if (uri != null) _handleUri(uri);
+      },
+      onError: (err) {
+        debugPrint('❌ [ProfilePage] uriLinkStream error: $err');
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+
+  void _handleUri(Uri uri) {
+    final host = uri.host;
+    String message;
+    switch (host) {
+      case 'payment-success':
+        context.read<UserProfileBloc>().add(FetchUserProfile());
+        message = 'Pembayaran berhasil! Akun Anda telah dipremium.';
+        break;
+      case 'payment-failed':
+        message = 'Pembayaran gagal. Silakan coba lagi.';
+        break;
+      case 'payment-error':
+        message = 'Terjadi kesalahan pada pembayaran.';
+        break;
+      default:
+        return;
+    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _upgradeNow() async {
+    setState(() => _isLoading = true);
+    try {
+      // misal harga hardcoded 99000, atau ambil dari server nanti
+      final result = await _subscriptionService.createSubscription(99000);
+      final uri = Uri.parse(result.paymentUrl);
+
+      // buka eksternal browser
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        throw 'Could not launch $uri';
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Gagal: $e')));
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   void _handleLogout(BuildContext context) async {
@@ -20,11 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!context.mounted) return;
 
       if (loggedOut) {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/login-page', (_) => false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Berhasil keluar akun')),
-        );
+        await Restart.restartApp();
+        return;
       }
     } catch (e) {
       if (!context.mounted) return;
@@ -155,7 +218,29 @@ class _ProfilePageState extends State<ProfilePage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: _isLoading
+                          ? null
+                          : () async {
+                              setState(() => _isLoading = true);
+                              try {
+                                final result = await SubscriptionService()
+                                    .createSubscription(99000);
+                                if (!mounted) return;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => PaymentWebViewPage(
+                                        url: result.paymentUrl),
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Gagal: $e')),
+                                );
+                              } finally {
+                                setState(() => _isLoading = false);
+                              }
+                            },
                       child: const Text('Tingkatkan Sekarang'),
                     ),
                     const Text(
