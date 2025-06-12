@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:fe_catat_uangku/bloc/arus_kas_bloc/arus_kas_bloc.dart';
+import 'package:fe_catat_uangku/bloc/top_expense_bloc/top_expense_bloc.dart';
 import 'package:fe_catat_uangku/bloc/trend_saldo_bloc/trend_saldo_bloc.dart';
 import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
 import 'package:fe_catat_uangku/models/note.dart';
@@ -42,3 +44,5 @@ part 'loading.dart';
 part 'error_dialog.dart';
 
 part 'home_widgets/chart_tren_widget.dart';
+part 'home_widgets/arus_kas_widget.dart';
+part 'home_widgets/top_expense_widget.dart';
