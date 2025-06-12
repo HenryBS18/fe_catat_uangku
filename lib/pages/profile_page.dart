@@ -1,40 +1,96 @@
 part of "pages.dart";
 
-class ProfilePage extends StatelessWidget {
-  final String name;
-  final String email;
-  final String accountType;
-  final String joinedDate;
-  final int totalNotes;
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
-  const ProfilePage({
-    super.key,
-    this.name = 'Putra Taufik',
-    this.email = 'putrataufik@gmail.com',
-    this.accountType = 'Gratis',
-    this.joinedDate = '12 Februari 2024',
-    this.totalNotes = 134,
-  });
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
-  void _handleLogout(BuildContext context) async {
-    final UserService _userService = UserService();
+class _ProfilePageState extends State<ProfilePage> {
+  late StreamSubscription<Uri?> _sub;
+  final _subscriptionService = SubscriptionService();
+  bool _isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    getInitialUri().then((uri) {
+      debugPrint('🔄 [ProfilePage] initialUri: $uri');
+      if (uri != null) _handleUri(uri);
+    }).catchError((e) {
+      debugPrint('❌ [ProfilePage] getInitialUri error: $e');
+    });
+    _sub = uriLinkStream.listen(
+      (Uri? uri) {
+        debugPrint('🔗 [ProfilePage] uriLinkStream fired: $uri');
+        if (uri != null) _handleUri(uri);
+      },
+      onError: (err) {
+        debugPrint('❌ [ProfilePage] uriLinkStream error: $err');
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+
+  void _handleUri(Uri uri) {
+    final host = uri.host;
+    String message;
+    switch (host) {
+      case 'payment-success':
+        context.read<UserProfileBloc>().add(FetchUserProfile());
+        message = 'Pembayaran berhasil! Akun Anda telah dipremium.';
+        break;
+      case 'payment-failed':
+        message = 'Pembayaran gagal. Silakan coba lagi.';
+        break;
+      case 'payment-error':
+        message = 'Terjadi kesalahan pada pembayaran.';
+        break;
+      default:
+        return;
+    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _upgradeNow() async {
+    setState(() => _isLoading = true);
     try {
-      bool loggedOut = await _userService.logout();
-      if (loggedOut) {
-        // Navigasi ke halaman login dan hapus semua rute sebelumnya
-        // Pastikan Anda memiliki halaman login dan rute bernama '/login-page' atau sesuai dengan aplikasi Anda
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            '/login-page',
-            (Route<dynamic> route) =>
-                false); // <<< GANTI '/login-page' DENGAN ROUTE HALAMAN LOGIN ANDA
+      // misal harga hardcoded 99000, atau ambil dari server nanti
+      final result = await _subscriptionService.createSubscription(99000);
+      final uri = Uri.parse(result.paymentUrl);
 
-        // Tampilkan SnackBar (opsional)
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Berhasil keluar akun')),
-        );
+      // buka eksternal browser
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        throw 'Could not launch $uri';
       }
     } catch (e) {
-      // Tangani error jika ada (meskipun logout() Anda saat ini tidak melempar error)
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Gagal: $e')));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _handleLogout(BuildContext context) async {
+    final userService = UserService();
+    try {
+      final loggedOut = await userService.logout();
+      if (!context.mounted) return;
+
+      if (loggedOut) {
+        await Restart.restartApp();
+        return;
+      }
+    } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal keluar akun: $e')),
       );
@@ -43,159 +99,173 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      appBar: AppBar(
-        title: const Text('Profil'),
+    return BlocBuilder<UserProfileBloc, UserState>(
+      builder: (context, state) {
+        if (state is UserProfileLoading || state is UserInitial) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (state is UserProfileLoaded) {
+          final user = state.user;
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<UserProfileBloc>().add(FetchUserProfile());
+            },
+            child: _buildProfile(context, user),
+          );
+        } else if (state is UserProfileError) {
+          return Scaffold(
+            body: Center(child: Text('❌ ${state.message}')),
+          );
+        }
+
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      },
+    );
+  }
+
+  Widget _buildProfile(BuildContext context, User user) {
+    final accountType = user.isPremium == true ? 'Premium' : 'Gratis';
+    final joinedDate = user.createdAt != null
+        ? DateFormat('d MMMM yyyy', 'id_ID').format(user.createdAt!)
+        : '-';
+
+    return SafeArea(
+      child: Scaffold(
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Profile Header
-          Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 10,
-            shadowColor: const Color.fromRGBO(
-                0, 0, 0, 2), // replace deprecated withOpacity
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                const CircleAvatar(
-                  radius: 40,
-                  // backgroundImage:
-                  //     AssetImage('assets/profile.jpg'), // Ganti dengan assetmu
-                ),
-                const SizedBox(height: 8),
-                Text(name,
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
-                Text(email),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(accountType,
-                      style: const TextStyle(color: Colors.grey)),
-                ),
-                Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF1E88E5), Color(0xFF00E676)],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    borderRadius:
-                        BorderRadius.vertical(bottom: Radius.circular(20)),
-                  ),
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Dapatkan akses full dari Catat Uangku dengan Premium',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.lightGreenAccent.shade100,
-                              foregroundColor: Colors.blue.shade900,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                            onPressed: () {},
-                            child: const Text('Tingkatkan Sekarang'),
-                          ),
-                          const Text(
-                            'Rp. 99.000/bln',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Informasi Akun
-          _sectionCard(
-            context,
-            title: 'Informasi Akun',
-            children: [
+        appBar: AppBar(
+          title: const Text('Profil'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildHeader(user.name ?? '-', user.email, accountType),
+            const SizedBox(height: 16),
+            _buildSection('Informasi Akun', [
               _itemTile(context, Icons.calendar_today, 'Tanggal Bergabung',
                   joinedDate),
               _itemTile(
                   context, Icons.account_circle, 'Tipe Akun', accountType),
-              _itemTile(context, Icons.receipt, 'Jumlah Transaksi',
-                  '$totalNotes transaksi dicatat'),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Fitur Akun
-          _sectionCard(
-            context,
-            title: 'Fitur Akun',
-            children: [
+            ]),
+            const SizedBox(height: 16),
+            _buildSection('Fitur Akun', [
               _itemTile(context, Icons.lock, 'Ganti Kata Sandi'),
               _itemTile(context, Icons.notifications, 'Notifikasi & Pengingat'),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Lainnya
-          _sectionCard(
-            context,
-            title: 'Lainnya',
-            children: [
+            ]),
+            const SizedBox(height: 16),
+            _buildSection('Lainnya', [
               _itemTile(context, Icons.help_outline, 'Pusat Bantuan'),
               _itemTile(context, Icons.description, 'Syarat & Ketentuan'),
               _itemTile(context, Icons.privacy_tip, 'Kebijakan Privasi'),
-            ],
+            ]),
+            const SizedBox(height: 24),
+            _buildLogoutButton(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(String name, String email, String accountType) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 10,
+      shadowColor: const Color.fromRGBO(0, 0, 0, 2),
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          const CircleAvatar(radius: 40),
+          const SizedBox(height: 8),
+          Text(name,
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(email),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child:
+                Text(accountType, style: const TextStyle(color: Colors.grey)),
           ),
-
-          const SizedBox(height: 24),
-
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24)),
-              padding: const EdgeInsets.symmetric(vertical: 16),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1E88E5), Color(0xFF00E676)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
             ),
-            onPressed: () {
-              _handleLogout(context);
-            },
-            child: const Text('Keluar dari Akun',
-                style: TextStyle(fontSize: 16, color: Colors.white)),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                const Text(
+                  'Dapatkan akses full dari Catat Uangku dengan Premium',
+                  style: TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.lightGreenAccent.shade100,
+                        foregroundColor: Colors.blue.shade900,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: _isLoading
+                          ? null
+                          : () async {
+                              setState(() => _isLoading = true);
+                              try {
+                                final result = await SubscriptionService()
+                                    .createSubscription(99000);
+                                if (!mounted) return;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => PaymentWebViewPage(
+                                        url: result.paymentUrl),
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Gagal: $e')),
+                                );
+                              } finally {
+                                setState(() => _isLoading = false);
+                              }
+                            },
+                      child: const Text('Tingkatkan Sekarang'),
+                    ),
+                    const Text(
+                      'Rp. 99.000/bln',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  // Helper Widget untuk Section
-  Widget _sectionCard(BuildContext context,
-      {required String title, required List<Widget> children}) {
+  Widget _buildSection(String title, List<Widget> children) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 10,
-      shadowColor:
-          const Color.fromRGBO(0, 0, 0, 2), // avoid deprecated withOpacity
+      shadowColor: const Color.fromRGBO(0, 0, 0, 2),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
@@ -214,7 +284,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Item List Tile
   Widget _itemTile(BuildContext context, IconData icon, String title,
       [String? trailing]) {
     return ListTile(
@@ -223,21 +292,29 @@ class ProfilePage extends StatelessWidget {
       trailing: trailing != null
           ? Text(trailing)
           : const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: title == 'Jumlah Transaksi'
-          ? () {
-              Navigator.pushNamed(
-                  context, '/payment-planning-page'); // nanti bisa diganti
-            }
-          : trailing == null
-              ? () => _openModal(context, title)
-              : null, // semua item lain dengan trailing = tidak bisa diklik
+      onTap: trailing == null
+          ? () => _openModal(context, title)
+          : title == 'Jumlah Transaksi'
+              ? () => Navigator.pushNamed(context, '/payment-planning-page')
+              : null,
     );
   }
 
-  // Modal untuk fitur akun
+  Widget _buildLogoutButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.redAccent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+      ),
+      onPressed: () => _handleLogout(context),
+      child: const Text('Keluar dari Akun',
+          style: TextStyle(fontSize: 16, color: Colors.white)),
+    );
+  }
+
   void _openModal(BuildContext context, String title) {
     Widget content;
-
     switch (title) {
       case 'Ganti Kata Sandi':
         content = const ChangePasswordModal();
