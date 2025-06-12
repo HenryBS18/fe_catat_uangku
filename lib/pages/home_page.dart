@@ -159,23 +159,9 @@ class _HomePageState extends State<HomePage> {
             // Chart Tren Saldo
             ChartTrenWidget(),
             const SizedBox(height: 16),
-            // // Placeholder: Pengeluaran Teratas widget
-            // PengeluaranTeratasWidget(),
-            // const SizedBox(height: 16),
-            // // Placeholder: Catatan Terakhir widget
-            // CatatanTerakhirWidget(),
-            // const SizedBox(height: 16),
-            // // Placeholder: Rencana Pembayaran mendatang widget
-            // RencanaPembayaranWidget(),
-            // const SizedBox(height: 16),
-            // // Placeholder: Anggaran widget
-            // AnggaranWidget(),
-            // const SizedBox(height: 16),
-            // // Placeholder: Arus Kas widget
-            // ArusKasWidget(),
-            // const SizedBox(height: 16),
-            // // Placeholder: Daftar Pengeluaran widget
-            // DaftarPengeluaranWidget(),
+            ArusKasWidget(),
+            const SizedBox(height: 16),
+            TopExpenseWidget(),
           ],
         ),
       ),
