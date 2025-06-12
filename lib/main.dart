@@ -1,8 +1,10 @@
 import 'package:fe_catat_uangku/bloc/arus_kas_bloc/arus_kas_bloc.dart';
+import 'package:fe_catat_uangku/bloc/planned_payment_dash_bloc/payment_planned_dash_bloc.dart';
 import 'package:fe_catat_uangku/bloc/top_expense_bloc/top_expense_bloc.dart';
 import 'package:fe_catat_uangku/bloc/trend_saldo_bloc/trend_saldo_bloc.dart';
 import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
 import 'package:fe_catat_uangku/services/arus_kas_service.dart';
+import 'package:fe_catat_uangku/services/planned_payment_dash_service.dart';
 import 'package:fe_catat_uangku/services/top_expense_service.dart';
 import 'package:fe_catat_uangku/services/trend_saldo_service.dart';
 import 'package:fe_catat_uangku/bloc/user_bloc/user_bloc.dart';
@@ -55,6 +57,10 @@ class MyApp extends StatelessWidget {
           create: (_) =>
               TopExpenseBloc(TopExpenseService())..add(LoadTopExpense()),
         ),
+        BlocProvider(
+          create: (_) => PlannedPaymentDashBloc(PlannedPaymentDashService())
+            ..add(LoadPlannedPayment()),
+        ),
       ],
       child: MaterialApp(
         title: 'Catat Uangku',
@@ -73,3 +79,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class PlannedPaymentService {}

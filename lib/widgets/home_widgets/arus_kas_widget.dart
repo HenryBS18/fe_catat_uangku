@@ -52,8 +52,7 @@ class ArusKasWidget extends StatelessWidget {
                       const Icon(Icons.more_horiz)
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  const Divider(),
+                  const SizedBox(height: 16),
                   const SizedBox(height: 8),
                   Text('BULAN INI',
                       style: Theme.of(context).textTheme.labelSmall),
