@@ -31,9 +31,8 @@ class PlannedPaymentDashWidget extends StatelessWidget {
                       Text('Rencana Pembayaran',
                           style: Theme.of(context)
                               .textTheme
-                              .titleMedium!
+                              .titleLarge!
                               .copyWith(fontWeight: FontWeight.bold)),
-                      const Icon(Icons.more_horiz)
                     ],
                   ),
                   const SizedBox(height: 8),

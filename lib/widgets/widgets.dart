@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:fe_catat_uangku/bloc/arus_kas_bloc/arus_kas_bloc.dart';
+import 'package:fe_catat_uangku/bloc/budget_bloc/budget_bloc.dart';
 import 'package:fe_catat_uangku/bloc/planned_payment_dash_bloc/payment_planned_dash_bloc.dart';
 import 'package:fe_catat_uangku/bloc/top_expense_bloc/top_expense_bloc.dart';
 import 'package:fe_catat_uangku/bloc/trend_saldo_bloc/trend_saldo_bloc.dart';
@@ -48,3 +49,4 @@ part 'home_widgets/chart_tren_widget.dart';
 part 'home_widgets/arus_kas_widget.dart';
 part 'home_widgets/top_expense_widget.dart';
 part 'home_widgets/planned_payment_dash_widget.dart';
+part 'home_widgets/budgets_widget.dart';

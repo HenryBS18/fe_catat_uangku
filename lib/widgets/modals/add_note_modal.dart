@@ -20,15 +20,6 @@ class _AddNotePageState extends State<AddNotePage> {
   String selectedCategory = 'Makanan & Minuman';
   DateTime selectedDate = DateTime.now();
 
-  final List<String> dummyCategories = [
-    'Makanan & Minuman',
-    'Transportasi',
-    'Belanja',
-    'Tagihan Listrik',
-    'Gaji',
-    'Hadiah',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -61,6 +52,19 @@ class _AddNotePageState extends State<AddNotePage> {
       selectedWallet = oldestWallet.name;
       selectedWalletId = oldestWallet.id;
     }
+  }
+
+  void refreshDashboardWidgets(BuildContext context) {
+    // Refresh Trend Saldo
+    context.read<TrendSaldoBloc>().add(LoadTrendSaldo());
+
+    // Refresh Top Expense
+    context.read<TopExpenseBloc>().add(LoadTopExpense());
+
+    // Refresh Planned Payment
+    context.read<PlannedPaymentDashBloc>().add(LoadPlannedPayment());
+
+    context.read<ArusKasBloc>().add(LoadArusKas());
   }
 
   bool isLoading = false;
@@ -99,6 +103,8 @@ class _AddNotePageState extends State<AddNotePage> {
       final bool isSuccess = await noteService.createNote(note);
 
       if (isSuccess) {
+        // Kirim event ke semua bloc/widget terkait agar mereka update
+        refreshDashboardWidgets(context);
         Navigator.pop(context); // close modal/page
         CustomSnackbar.showSuccess(context, "Transaksi berhasil di simpan");
         return;
@@ -203,9 +209,67 @@ class _AddNotePageState extends State<AddNotePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isIncome
+                                  ? Colors.green.shade50
+                                  : Colors
+                                      .red.shade50, // latar belakang hijau muda
+                            ),
+                            child: Text(
+                              'IDR',
+                              style: TextStyle(
+                                color: isIncome ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextField(
+                                controller: amountController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  ThousandsSeparatorInputFormatter(),
+                                ],
+                                style: TextStyle(
+                                  color: isIncome ? Colors.green : Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: '0',
+                                  border: InputBorder.none,
+                                  hintStyle: TextStyle(
+                                    color:
+                                        (isIncome ? Colors.green : Colors.red)
+                                            .withOpacity(0.6),
+                                  ),
+                                )),
+                          ),
+                        ]),
+                        const Divider(
+                            height: 32, thickness: 1, color: Colors.grey),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.account_balance_wallet),
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.blue.shade50,
+                              // Warna latar belakang ikon
+                            ),
+                            child: const Icon(
+                              Icons.account_balance_wallet,
+                              color: Color.fromARGB(255, 19, 145, 248),
+                              size: 28,
+                            ),
+                          ),
                           title: Text(selectedWallet),
                           trailing:
                               const Icon(Icons.arrow_forward_ios, size: 16),
@@ -234,31 +298,21 @@ class _AddNotePageState extends State<AddNotePage> {
                         ),
                         const Divider(
                             height: 32, thickness: 1, color: Colors.grey),
-                        Row(
-                          children: [
-                            const Icon(Icons.attach_money),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: TextField(
-                                controller: amountController,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  ThousandsSeparatorInputFormatter(),
-                                ],
-                                decoration: const InputDecoration(
-                                  hintText: 'Masukkan jumlah',
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(
-                            height: 32, thickness: 1, color: Colors.grey),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.category),
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.red.shade50,
+                              // Warna latar belakang ikon
+                            ),
+                            child: const Icon(
+                              Icons.category_sharp,
+                              color: Colors.redAccent, // warna ikon
+                              size: 28,
+                            ),
+                          ),
                           title: Text(selectedCategory),
                           trailing:
                               const Icon(Icons.arrow_forward_ios, size: 16),
@@ -268,9 +322,8 @@ class _AddNotePageState extends State<AddNotePage> {
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
                               builder: (_) => CategorySelectionModal(
-                                categories: dummyCategories,
                                 onSelected: (value) {
-                                  setState(() => selectedWallet = value);
+                                  setState(() => selectedCategory = value);
                                 },
                               ),
                             );
@@ -289,12 +342,27 @@ class _AddNotePageState extends State<AddNotePage> {
                               ),
                             );
                             if (result != null) {
-                              noteController.text = result;
+                              setState(() {
+                                noteController.text = result;
+                              });
                             }
                           },
                           child: Row(
                             children: [
-                              const Icon(Icons.message),
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.yellow.shade50,
+                                  // Warna latar belakang ikon
+                                ),
+                                child: const Icon(
+                                  Icons.notes,
+                                  color: Color.fromARGB(
+                                      255, 170, 157, 36), // warna ikon
+                                  size: 28,
+                                ),
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -315,7 +383,19 @@ class _AddNotePageState extends State<AddNotePage> {
                             height: 32, thickness: 1, color: Colors.grey),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.calendar_month),
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.pink.shade50,
+                              // Warna latar belakang ikon
+                            ),
+                            child: const Icon(
+                              Icons.date_range,
+                              color: Colors.pink, // warna ikon
+                              size: 28,
+                            ),
+                          ),
                           title: const Text('Tanggal'),
                           subtitle: Text(
                               '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),

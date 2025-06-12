@@ -44,9 +44,8 @@ class TopExpenseWidget extends StatelessWidget {
                       Text('Pengeluaran teratas',
                           style: Theme.of(context)
                               .textTheme
-                              .titleMedium!
+                              .titleLarge!
                               .copyWith(fontWeight: FontWeight.bold)),
-                      const Icon(Icons.more_horiz)
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -94,14 +93,6 @@ class TopExpenseWidget extends StatelessWidget {
                       ),
                     );
                   }).toList(),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () =>
-                          context.read<TopExpenseBloc>().add(LoadTopExpense()),
-                      child: const Text('Tampilkan lagi'),
-                    ),
-                  )
                 ],
               ),
             ),
