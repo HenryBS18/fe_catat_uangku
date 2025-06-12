@@ -1,14 +1,72 @@
 part of '../widgets.dart';
 
 class CategorySelectionModal extends StatelessWidget {
-  final List<String> categories;
   final Function(String) onSelected;
 
-  const CategorySelectionModal({
-    super.key,
-    required this.categories,
-    required this.onSelected,
-  });
+  CategorySelectionModal({super.key, required this.onSelected});
+
+  final List<Map<String, dynamic>> categories = [
+    {
+      "name": "Makanan & Minuman",
+      "description": "Pengeluaran untuk makan, minum, dan jajan.",
+      "icon": Icons.fastfood
+    },
+    {
+      "name": "Berbelanja",
+      "description": "Belanja pakaian, barang kebutuhan pribadi, dll.",
+      "icon": Icons.shopping_bag
+    },
+    {
+      "name": "Perlengkapan rumah",
+      "description": "Barang rumah tangga seperti sabun, alat dapur.",
+      "icon": Icons.kitchen
+    },
+    {
+      "name": "Perlengkapan sekolah",
+      "description": "Alat tulis, buku, dan kebutuhan belajar.",
+      "icon": Icons.school
+    },
+    {
+      "name": "Transportasi",
+      "description": "Ongkos kendaraan umum atau bahan bakar.",
+      "icon": Icons.directions_bus
+    },
+    {
+      "name": "Kendaraan",
+      "description": "Servis, pajak, dan perawatan kendaraan.",
+      "icon": Icons.directions_car
+    },
+    {
+      "name": "Hidup dan Hiburan",
+      "description": "Nonton, nongkrong, langganan hiburan.",
+      "icon": Icons.movie
+    },
+    {
+      "name": "Komunikasi, PC",
+      "description": "Pulsa, internet, dan perangkat elektronik.",
+      "icon": Icons.wifi
+    },
+    {
+      "name": "Pengeluaran Finansial",
+      "description": "Cicilan, donasi, pajak, asuransi.",
+      "icon": Icons.account_balance_wallet
+    },
+    {
+      "name": "Investasi",
+      "description": "Tabungan, reksa dana, emas, crypto, dll.",
+      "icon": Icons.trending_up
+    },
+    {
+      "name": "Pemasukan",
+      "description": "Gaji, bonus, hasil jualan, dll.",
+      "icon": Icons.attach_money
+    },
+    {
+      "name": "Lain-lain",
+      "description": "Pengeluaran yang tidak termasuk kategori lain.",
+      "icon": Icons.more_horiz
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +93,14 @@ class CategorySelectionModal extends StatelessWidget {
               controller: controller,
               itemCount: categories.length,
               itemBuilder: (_, index) {
+                final category = categories[index];
                 return ListTile(
-                  title: Text(categories[index]),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  leading: Icon(category['icon'], color: Colors.blue),
+                  title: Text(category['name']),
+                  subtitle: Text(category['description'],
+                      style: const TextStyle(fontSize: 12)),
                   onTap: () {
-                    onSelected(categories[index]);
+                    onSelected(category['name']);
                     Navigator.pop(context);
                   },
                 );

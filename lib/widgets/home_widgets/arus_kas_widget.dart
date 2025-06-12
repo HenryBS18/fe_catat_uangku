@@ -47,9 +47,8 @@ class ArusKasWidget extends StatelessWidget {
                       Text('Arus Kas',
                           style: Theme.of(context)
                               .textTheme
-                              .titleMedium!
+                              .titleLarge!
                               .copyWith(fontWeight: FontWeight.bold)),
-                      const Icon(Icons.more_horiz)
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -99,14 +98,6 @@ class ArusKasWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () =>
-                          context.read<ArusKasBloc>().add(LoadArusKas()),
-                      child: const Text('Tampilkan lagi'),
-                    ),
-                  )
                 ],
               ),
             ),

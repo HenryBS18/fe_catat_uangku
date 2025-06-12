@@ -156,7 +156,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-            // Chart Tren Saldo
             ChartTrenWidget(),
             const SizedBox(height: 16),
             ArusKasWidget(),
@@ -164,6 +163,8 @@ class _HomePageState extends State<HomePage> {
             TopExpenseWidget(),
             const SizedBox(height: 16),
             PlannedPaymentDashWidget(),
+            const SizedBox(height: 16),
+            BudgetWidget()
           ],
         ),
       ),

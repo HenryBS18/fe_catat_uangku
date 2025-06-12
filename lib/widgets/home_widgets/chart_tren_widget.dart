@@ -22,9 +22,8 @@ class ChartTrenWidget extends StatelessWidget {
                 Text('Tren Saldo',
                     style: Theme.of(context)
                         .textTheme
-                        .titleMedium!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold)),
-                const Icon(Icons.more_horiz)
               ],
             ),
             const SizedBox(height: 12),
@@ -111,6 +110,32 @@ class ChartTrenWidget extends StatelessWidget {
                               sideTitles: SideTitles(showTitles: false)),
                         ),
                         borderData: FlBorderData(show: false),
+                        lineTouchData: LineTouchData(
+                          enabled: true,
+                          touchTooltipData: LineTouchTooltipData(
+                            getTooltipColor: (spot) => Colors.white,
+                            tooltipBorderRadius: BorderRadius.circular(5),
+                            tooltipBorder: BorderSide(
+                              color: Colors.black.withOpacity(
+                                  0.1), // garis tipis untuk efek depth
+                              width: 1,
+                            ),
+                            fitInsideHorizontally: true,
+                            fitInsideVertically: true,
+                            getTooltipItems: (touchedSpots) {
+                              return touchedSpots.map((touchedSpot) {
+                                return LineTooltipItem(
+                                  'Rp ${touchedSpot.y.toStringAsFixed(0)}',
+                                  const TextStyle(
+                                    color: Colors.blue, // Warna teks tooltip
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                );
+                              }).toList();
+                            },
+                          ),
+                        ),
                         lineBarsData: [
                           LineChartBarData(
                             spots: spots,
@@ -146,11 +171,6 @@ class ChartTrenWidget extends StatelessWidget {
                     const Text('Tren Saldo', style: TextStyle(fontSize: 12)),
                   ],
                 ),
-                TextButton(
-                  onPressed: () =>
-                      context.read<TrendSaldoBloc>().add(LoadTrendSaldo()),
-                  child: const Text('Tampilkan lagi'),
-                )
               ],
             )
           ],

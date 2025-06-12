@@ -2,26 +2,6 @@ part of 'pages.dart';
 
 class PlanningPage extends StatelessWidget {
   const PlanningPage({Key? key}) : super(key: key);
-  void _handleLogout(BuildContext context) async {
-    final userService = UserService();
-    try {
-      final loggedOut = await userService.logout();
-      if (!context.mounted) return;
-
-      if (loggedOut) {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/login-page', (_) => false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Berhasil keluar akun')),
-        );
-      }
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal keluar akun: $e')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +57,7 @@ class PlanningPage extends StatelessWidget {
             const SizedBox(height: 24),
             GestureDetector(
               onTap: () {
-                _handleLogout(context);
+                Navigator.pushNamed(context, '/budget-planning-page');
               },
               child: Container(
                 padding: EdgeInsets.all(16),
