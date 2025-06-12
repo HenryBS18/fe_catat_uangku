@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:fe_catat_uangku/bloc/trend_saldo_bloc/trend_saldo_bloc.dart';
 import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
 import 'package:fe_catat_uangku/models/note.dart';
 import 'package:fe_catat_uangku/models/wallet.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 part 'dots_indicator.dart';
 
@@ -38,3 +40,5 @@ part 'input/input_text_area.dart';
 part 'button.dart';
 part 'loading.dart';
 part 'error_dialog.dart';
+
+part 'home_widgets/chart_tren_widget.dart';
