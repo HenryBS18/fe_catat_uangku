@@ -1,6 +1,8 @@
+import 'package:fe_catat_uangku/bloc/trend_saldo_bloc/trend_saldo_bloc.dart';
+import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
+import 'package:fe_catat_uangku/services/trend_saldo_service.dart';
 import 'package:fe_catat_uangku/bloc/user_bloc/user_bloc.dart';
 import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
-import 'package:fe_catat_uangku/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fe_catat_uangku/routes/routes.dart';
@@ -33,6 +35,9 @@ class MyApp extends StatelessWidget {
           create: (_) => WalletBloc(WalletService())..add(FetchWallets()),
         ),
         BlocProvider(
+          create: (_) =>
+              TrendSaldoBloc(TrendSaldoService())..add(LoadTrendSaldo()),
+        ),
           create: (_) => UserProfileBloc(userService: UserService())
             ..add(FetchUserProfile()),
         )
