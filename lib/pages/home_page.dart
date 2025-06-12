@@ -162,6 +162,8 @@ class _HomePageState extends State<HomePage> {
             ArusKasWidget(),
             const SizedBox(height: 16),
             TopExpenseWidget(),
+            const SizedBox(height: 16),
+            PlannedPaymentDashWidget(),
           ],
         ),
       ),
