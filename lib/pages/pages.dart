@@ -5,6 +5,10 @@ import 'package:fe_catat_uangku/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // untuk context.read dan BlocBuilder
+import 'package:fe_catat_uangku/bloc/note_bloc/note_bloc.dart';
+
+
 
 part 'main_page.dart';
 part 'splashscreen_page.dart';
@@ -15,6 +19,7 @@ part 'planning_page.dart';
 part 'payment_planning_page.dart';
 part 'budget_planning_page.dart';
 part 'payment_planning_detail_page.dart';
+part 'transaction_history_page.dart';
 
 part '../widgets/hold_action_fab.dart';
 part 'profile_page.dart';
