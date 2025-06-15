@@ -9,7 +9,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int currentIndex = 0;
-  List<Widget> pages = const [HomePage(), PlanningPage(), ProfilePage()];
+  List<Widget> pages = const [
+    HomePage(),
+    PlanningPage(),
+    TransactionHistoryPage(),
+    ProfilePage()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +37,11 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(currentIndex == 1 ? Icons.timer : Icons.timer_outlined),
             label: 'Rencana',
+          ),
+          BottomNavigationBarItem(
+            icon:
+                Icon(currentIndex == 1 ? Icons.timer : Icons.history_outlined),
+            label: 'Riwayat',
           ),
           BottomNavigationBarItem(
             icon: Icon(currentIndex == 2 ? Icons.person : Icons.person_outline),
