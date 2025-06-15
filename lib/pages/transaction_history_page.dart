@@ -141,18 +141,54 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         ? (tx.note!.length > 20 ? tx.note!.substring(0, 20) + '...' : tx.note!)
         : '';
 
-    switch (tx.type) {
-      case 'expense':
-        icon = Icons.restaurant;
-        iconColor = Colors.red;
+    switch (tx.category) {
+      case 'Makanan & Minuman':
+        icon = Icons.fastfood;
+        iconColor = Colors.redAccent;
         break;
-      case 'income':
-        icon = Icons.attach_money;
+      case 'Berbelanja':
+        icon = Icons.shopping_bag;
+        iconColor = Colors.deepOrange;
+        break;
+      case 'Perlengkapan rumah':
+        icon = Icons.kitchen;
+        iconColor = Colors.brown;
+        break;
+      case 'Perlengkapan sekolah':
+        icon = Icons.school;
+        iconColor = Colors.indigo;
+        break;
+      case 'Transportasi':
+        icon = Icons.directions_bus;
+        iconColor = Colors.blue;
+        break;
+      case 'Kendaraan':
+        icon = Icons.directions_car;
+        iconColor = Colors.teal;
+        break;
+      case 'Hidup dan Hiburan':
+        icon = Icons.movie;
+        iconColor = Colors.purple;
+        break;
+      case 'Komunikasi, PC':
+        icon = Icons.wifi;
+        iconColor = Colors.cyan;
+        break;
+      case 'Pengeluaran Finansial':
+        icon = Icons.account_balance_wallet;
         iconColor = Colors.green;
         break;
-      case 'transfer':
-        icon = Icons.sync_alt;
-        iconColor = Colors.teal;
+      case 'Investasi':
+        icon = Icons.trending_up;
+        iconColor = Colors.lightGreen;
+        break;
+      case 'Pemasukan':
+        icon = Icons.attach_money;
+        iconColor = Colors.greenAccent;
+        break;
+      case 'Lain-lain':
+        icon = Icons.more_horiz;
+        iconColor = Colors.grey;
         break;
       default:
         icon = Icons.notes;
