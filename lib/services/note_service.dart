@@ -21,13 +21,13 @@ class NoteService {
     };
 
     final Response response = await api.post('/notes', data: data);
+    final Map<String, dynamic> result = jsonDecode(response.body);
 
     if (response.statusCode == 201) {
       return true;
     }
 
-    final result = jsonDecode(response.body);
-    throw Exception(result['message'] ?? 'Gagal membuat catatan');
+    throw Exception(result['message']);
   }
 
   Future<bool> updateNote(String id, NoteModel transaction) async {
@@ -40,47 +40,51 @@ class NoteService {
     };
 
     final Response response = await api.put('/notes/$id', data: data);
+    final Map<String, dynamic> result = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
       return true;
     }
 
-    final result = jsonDecode(response.body);
-    throw Exception(result['message'] ?? 'Gagal memperbarui catatan');
+    throw Exception(result['message']);
   }
 
   Future<bool> deleteNote(String id) async {
     final Response response = await api.delete('/notes/$id');
+    final Map<String, dynamic> result = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      return true;
+    if (response.statusCode != 200) {
+      throw Exception(result['message']);
     }
-
-    final result = jsonDecode(response.body);
-    throw Exception(result['message'] ?? 'Gagal menghapus catatan');
+    return true;
   }
 
   Future<List<NoteModel>> getNotesByWallet(String walletId) async {
     final Response response = await api.get('/notes/wallet/$walletId');
+    final List<dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      final dynamic decoded = jsonDecode(response.body);
-      if (decoded is List) {
-        return decoded.map((json) => NoteModel.fromJson(json)).toList();
-      } else {
-        throw Exception('Response bukan berupa list');
-      }
+      return data
+          .map((json) => NoteModel(
+                id: json['_id'],
+                walletId: json['walletId'],
+                type: json['type'],
+                amount: json['amount'],
+                category: json['category'],
+                date: json['date'],
+                note: json['note'],
+              ))
+          .toList();
     }
 
-    throw Exception("Gagal mengambil catatan berdasarkan wallet");
+    throw Exception("Gagal mengambil transaksi");
   }
 
-  Future<List<NoteModel>> getAllNotes({
-    String? type,
-    String? category,
-    String? startDate,
-    String? endDate,
-  }) async {
+  Future<List<NoteModel>> getAllNotes(
+      {String? type,
+      String? category,
+      String? startDate,
+      String? endDate}) async {
     final queryParams = <String, String>{};
     if (type != null) queryParams['type'] = type;
     if (category != null) queryParams['category'] = category;
@@ -89,45 +93,60 @@ class NoteService {
       queryParams['endDate'] = endDate;
     }
 
-    final queryString = Uri(queryParameters: queryParams).query;
-    final Response response = await api.get(
-        '/notes${queryString.isNotEmpty ? '?$queryString' : ''}');
+    final String queryString = Uri(queryParameters: queryParams).query;
+    final Response response =
+        await api.get('/notes${queryString.isNotEmpty ? '?$queryString' : ''}');
+    final List<dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      final dynamic decoded = jsonDecode(response.body);
-      if (decoded is List) {
-        return decoded.map((json) => NoteModel.fromJson(json)).toList();
-      } else {
-        throw Exception('Response bukan berupa list');
-      }
+      return data
+          .map((json) => NoteModel(
+                id: json['_id'],
+                walletId: json['walletId'],
+                type: json['type'],
+                amount: json['amount'],
+                category: json['category'],
+                date: json['date'],
+                note: json['note'],
+              ))
+          .toList();
     }
 
-    throw Exception("Gagal mengambil semua catatan");
+    throw Exception("Gagal mengambil semua transaksi");
   }
 
   Future<NoteModel> getNoteById(String id) async {
     final Response response = await api.get('/notes/$id');
+    final Map<String, dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      return NoteModel.fromJson(data);
+      return NoteModel(
+        id: data['_id'],
+        walletId: data['walletId'],
+        type: data['type'],
+        amount: data['amount'],
+        category: data['category'],
+        date: data['date'],
+        note: data['note'],
+      );
     }
 
-    throw Exception("Gagal mengambil catatan");
+    throw Exception("Gagal mengambil transaksi");
   }
 
-  Future<Map<String, dynamic>> getNoteSummary({Map<String, String>? filters}) async {
-    final queryString =
+  Future<Map<String, dynamic>> getNoteSummary(
+      {Map<String, String>? filters}) async {
+    final String queryString =
         filters != null ? Uri(queryParameters: filters).query : '';
-    final Response response =
-        await api.get('/notes/summary${queryString.isNotEmpty ? '?$queryString' : ''}');
+    final Response response = await api
+        .get('/notes/summary${queryString.isNotEmpty ? '?$queryString' : ''}');
+    final Map<String, dynamic> data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
       return data;
     }
 
-    throw Exception("Gagal mengambil summary catatan");
+    throw Exception("Gagal mengambil summary transaksi");
   }
 
   Future<Map<String, dynamic>> scanReceipt(File imageFile) async {
@@ -144,7 +163,11 @@ class NoteService {
       contentType: MediaType(typeParts[0], typeParts[1]),
     );
 
-    final response = await api.postMultipart('/scan-receipt', files: [multipartFile]);
+    final response = await api.postMultipart(
+      '/scan-receipt',
+      files: [multipartFile],
+    );
+
     final responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200) {
@@ -161,7 +184,10 @@ class NoteService {
   }
 
   Future<Map<String, dynamic>> voiceToNote(String text) async {
-    final response = await api.post('/voice-receipt/', data: {'text': text});
+    final response = await api.post(
+      '/voice-receipt/',
+      data: {'text': text},
+    );
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
