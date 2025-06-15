@@ -19,4 +19,5 @@ Map<String, Widget Function(BuildContext)> routes = {
         create: (_) => NoteBloc(noteService)..add(FetchNotes()),
         child: const TransactionHistoryPage(),
       ),
+  '/add-payment-planning-page': (context) => const AddPaymentPlanningPage(),
 };

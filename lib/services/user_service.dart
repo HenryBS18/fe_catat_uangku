@@ -9,7 +9,7 @@ class UserService {
   final BaseApi api = BaseApi();
 
   Future<bool> register(User user) async {
-    final Response response = await api.post('/users/register', data: {
+    final Response response = await api.post('/auth/register', data: {
       'name': user.name,
       'email': user.email,
       'password': user.password,
@@ -28,7 +28,7 @@ class UserService {
   }
 
   Future<bool> login(User user) async {
-    final Response response = await api.post('/users/login', data: {
+    final Response response = await api.post('/auth/login', data: {
       'email': user.email,
       'password': user.password,
     });
@@ -52,5 +52,29 @@ class UserService {
     prefs.remove('token');
 
     return true;
+  }
+
+  Future<User> getUserProfile() async {
+    final Response response = await api.get('/profile');
+    print('✅ Status code: ${response.statusCode}');
+    print('📦 Body: ${response.body}');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    print('👉 Token di Flutter: $token');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+
+      return User(
+        email: data['email'],
+        name: data['name'],
+        isPremium: data['isPremium'] ?? false,
+        createdAt: data['createdAt'] != null
+            ? DateTime.parse(data['createdAt'])
+            : null,
+      );
+    }
+
+    final Map<String, dynamic> error = jsonDecode(response.body);
+    throw Exception(error['message'] ?? 'Gagal mengambil profil');
   }
 }
