@@ -40,11 +40,11 @@ class _MainPageState extends State<MainPage> {
           ),
           BottomNavigationBarItem(
             icon:
-                Icon(currentIndex == 1 ? Icons.timer : Icons.history_outlined),
+                Icon(currentIndex == 2 ? Icons.timer : Icons.history_outlined),
             label: 'Riwayat',
           ),
           BottomNavigationBarItem(
-            icon: Icon(currentIndex == 2 ? Icons.person : Icons.person_outline),
+            icon: Icon(currentIndex == 3 ? Icons.person : Icons.person_outline),
             label: 'profile',
           ),
         ],
