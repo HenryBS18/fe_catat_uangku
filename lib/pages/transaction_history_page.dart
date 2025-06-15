@@ -8,12 +8,27 @@ class TransactionHistoryPage extends StatefulWidget {
 }
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
-  int currentIndex = 1; // Riwayat ada di tengah (index ke-1)
+  Map<String, String> _walletNames = {};
 
   @override
   void initState() {
     super.initState();
-    context.read<NoteBloc>().add(FetchNotes());
+
+    final noteState = context.read<NoteBloc>().state;
+    if (noteState is! NoteLoaded) {
+      context.read<NoteBloc>().add(FetchNotes());
+    }
+
+    final walletState = context.read<WalletBloc>().state;
+    if (walletState is! WalletLoaded) {
+      context.read<WalletBloc>().add(FetchWallets());
+    }
+  }
+
+  void _extractWalletNames(List<WalletModel> wallets) {
+    setState(() {
+      _walletNames = {for (var w in wallets) w.id: w.name};
+    });
   }
 
   @override
@@ -22,86 +37,177 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       appBar: AppBar(
         title: const Text('Riwayat Transaksi'),
       ),
-      body: BlocBuilder<NoteBloc, NoteState>(
-        builder: (context, state) {
-          if (state is NoteLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is NoteLoaded) {
-            final transactions = state.notes;
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<WalletBloc, WalletState>(
+            listener: (context, state) {
+              if (state is WalletLoaded) {
+                _extractWalletNames(state.wallets);
+              }
+            },
+          )
+        ],
+        child: BlocBuilder<NoteBloc, NoteState>(
+          builder: (context, state) {
+            if (state is NoteLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is NoteLoaded) {
+              final transactions = state.notes;
 
-            if (transactions.isEmpty) {
-              return const Center(child: Text('Tidak ada transaksi'));
+              if (transactions.isEmpty) {
+                return const Center(child: Text('Tidak ada transaksi'));
+              }
+
+              final groupedTransactions = <String, List<NoteModel>>{};
+
+              for (var tx in transactions) {
+                final date = DateTime.tryParse(tx.date);
+                if (date == null) continue;
+                final dateStr = DateFormat('d MMMM', 'id_ID').format(date);
+                groupedTransactions.putIfAbsent(dateStr, () => []).add(tx);
+              }
+
+              return ListView(
+                padding: const EdgeInsets.only(bottom: 32.0),
+                children: groupedTransactions.entries.map((entry) {
+                  final date = entry.key;
+                  final txs = entry.value;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 16.0),
+                        child: Text(
+                          date,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      ...txs.asMap().entries.map((entry) {
+                        final i = entry.key;
+                        final tx = entry.value;
+                        return Column(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 12.0, vertical: 10.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(
+                                        0, 4), // hanya bayangan ke bawah
+                                  ),
+                                ],
+                              ),
+                              child: _buildTransactionTile(tx),
+                            ),
+                            if (i == txs.length - 1) ...[
+                              const SizedBox(height: 12),
+                              const Divider(
+                                  thickness: 8,
+                                  color: Color.fromARGB(255, 224, 224, 224)),
+                            ],
+                          ],
+                        );
+                      }),
+                    ],
+                  );
+                }).toList(),
+              );
+            } else if (state is NoteError) {
+              return Center(child: Text('Terjadi kesalahan: ${state.message}'));
             }
 
-            return ListView.builder(
-              itemCount: transactions.length,
-              itemBuilder: (context, index) {
-                final tx = transactions[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Card(
-                    child: ListTile(
-                      leading: Icon(
-                        tx.type == 'expense' ? Icons.arrow_upward : Icons.arrow_downward,
-                        color: tx.type == 'expense' ? Colors.red : Colors.green,
-                      ),
-                      title: Text(tx.category ?? 'Tanpa kategori'),
-                      subtitle: Text(tx.note ?? ''),
-                      trailing: Text(
-                        'Rp ${tx.amount}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          } else if (state is NoteError) {
-            return Center(child: Text('Terjadi kesalahan: ${state.message}'));
-          }
-
-          return const SizedBox();
-        },
+            return const SizedBox();
+          },
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: currentIndex,
-        unselectedItemColor: Colors.black,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/main-page');
-          } else if (index == 1) {
-            // Halaman saat ini (Riwayat)
-          } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/profile-page');
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Beranda',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Riwayat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profil',
-          ),
+    );
+  }
+
+  Widget _buildTransactionTile(NoteModel tx) {
+    IconData icon;
+    Color iconColor;
+    String walletName = _walletNames[tx.walletId] ?? 'Dompet Tidak Diketahui';
+    String noteText = (tx.note?.isNotEmpty ?? false)
+        ? (tx.note!.length > 20 ? tx.note!.substring(0, 20) + '...' : tx.note!)
+        : '';
+
+    switch (tx.type) {
+      case 'expense':
+        icon = Icons.restaurant;
+        iconColor = Colors.red;
+        break;
+      case 'income':
+        icon = Icons.attach_money;
+        iconColor = Colors.green;
+        break;
+      case 'transfer':
+        icon = Icons.sync_alt;
+        iconColor = Colors.teal;
+        break;
+      default:
+        icon = Icons.notes;
+        iconColor = Colors.grey;
+    }
+
+    final amountText = (tx.type == 'expense' ? '-Rp' : 'Rp') +
+        NumberFormat("#,##0", "id_ID").format(tx.amount);
+
+    final amountColor = tx.type == 'expense'
+        ? Colors.red
+        : (tx.type == 'income' ? Colors.green : Colors.black);
+
+    final parsedDate = DateTime.tryParse(tx.date);
+
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: iconColor.withOpacity(0.1),
+        child: Icon(icon, color: iconColor),
+      ),
+      title: Text(
+        tx.category,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(walletName),
+          if (noteText.isNotEmpty)
+            Text(
+              noteText,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PlanningPage()),
-          );
-        },
-        tooltip: 'Rencana',
-        child: const Icon(Icons.add),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            amountText,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: amountColor,
+            ),
+          ),
+          if (parsedDate != null)
+            Text(
+              DateFormat.Hm().format(parsedDate),
+              style: const TextStyle(fontSize: 12),
+            ),
+        ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

@@ -54,7 +54,7 @@ class _AddNotePageState extends State<AddNotePage> {
     }
   }
 
-  void refreshDashboardWidgets(BuildContext context) {
+  void refresh(BuildContext context) {
     // Refresh Trend Saldo
     context.read<TrendSaldoBloc>().add(LoadTrendSaldo());
 
@@ -65,6 +65,7 @@ class _AddNotePageState extends State<AddNotePage> {
     context.read<PlannedPaymentDashBloc>().add(LoadPlannedPayment());
 
     context.read<ArusKasBloc>().add(LoadArusKas());
+    context.read<NoteBloc>().add(FetchNotes());
   }
 
   bool isLoading = false;
@@ -104,7 +105,7 @@ class _AddNotePageState extends State<AddNotePage> {
 
       if (isSuccess) {
         // Kirim event ke semua bloc/widget terkait agar mereka update
-        refreshDashboardWidgets(context);
+        refresh(context);
         Navigator.pop(context); // close modal/page
         CustomSnackbar.showSuccess(context, "Transaksi berhasil di simpan");
         return;
