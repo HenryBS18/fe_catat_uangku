@@ -418,17 +418,22 @@ class _AddNotePageState extends State<AddNotePage> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  ElevatedButton.icon(
-                    onPressed: isLoading ? null : _saveNote,
-                    icon: isLoading
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Icon(Icons.arrow_forward),
-                    label: Text(isLoading ? 'Menyimpan...' : 'Selanjutnya'),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : _saveNote,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: CustomColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Simpan',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white),
+                            ),
+                    ),
                   ),
                   const SizedBox(height: 24),
                 ],

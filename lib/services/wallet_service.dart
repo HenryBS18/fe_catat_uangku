@@ -8,10 +8,11 @@ class WalletService {
 
   WalletModel fromJson(Map<String, dynamic> json) {
     return WalletModel(
-        id: json['_id'],
-        name: json['name'],
-        balance: json['balance'],
-        createdAt: DateTime.parse(json['createdAt']));
+      id: json['_id'],
+      name: json['name'],
+      balance: json['balance'],
+      createdAt: DateTime.parse(json['createdAt']),
+    );
   }
 
   Map<String, dynamic> toJson(WalletModel wallet) {
@@ -32,7 +33,6 @@ class WalletService {
     }
   }
 
-  // Tambahan (jika nanti diperlukan)
   Future<bool> createWallet(WalletModel wallet) async {
     final Response response = await api.post('/', data: toJson(wallet));
     return response.statusCode == 201;

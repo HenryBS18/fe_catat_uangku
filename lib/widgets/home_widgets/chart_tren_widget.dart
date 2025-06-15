@@ -51,12 +51,22 @@ class ChartTrenWidget extends StatelessWidget {
                   } else if (state is TrendSaldoError) {
                     return Center(child: Text(state.message));
                   } else if (state is TrendSaldoLoaded) {
-                    final fullList = state.data;
+                    final now = DateTime.now();
+                    final fullList = state.data
+                        .where((e) =>
+                            e.date.isAfter(now.subtract(Duration(days: 7))))
+                        .toList();
+
+                    if (fullList.isEmpty) {
+                      return const Center(child: Text('Tidak ada data'));
+                    }
+
                     final spots = fullList
                         .asMap()
                         .entries
                         .map((e) => FlSpot(e.key.toDouble(), e.value.balance))
                         .toList();
+
                     final maxY = fullList
                             .map((e) => e.balance)
                             .reduce((a, b) => a > b ? a : b) *
@@ -116,8 +126,7 @@ class ChartTrenWidget extends StatelessWidget {
                             getTooltipColor: (spot) => Colors.white,
                             tooltipBorderRadius: BorderRadius.circular(5),
                             tooltipBorder: BorderSide(
-                              color: Colors.black.withOpacity(
-                                  0.1), // garis tipis untuk efek depth
+                              color: Colors.black.withOpacity(0.1),
                               width: 1,
                             ),
                             fitInsideHorizontally: true,
@@ -127,7 +136,7 @@ class ChartTrenWidget extends StatelessWidget {
                                 return LineTooltipItem(
                                   'Rp ${touchedSpot.y.toStringAsFixed(0)}',
                                   const TextStyle(
-                                    color: Colors.blue, // Warna teks tooltip
+                                    color: Colors.blue,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12,
                                   ),
