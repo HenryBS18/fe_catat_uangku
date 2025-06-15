@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         routes: routes,
-        initialRoute: '/',
+        initialRoute: '/history-transaction-page',
         debugShowCheckedModeBanner: false,
       ),
     );
