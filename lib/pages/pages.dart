@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:fe_catat_uangku/bloc/user_bloc/user_bloc.dart';
 import 'package:fe_catat_uangku/models/user.dart';
-import 'package:fe_catat_uangku/services/subscription_service.dart';
 import 'package:fe_catat_uangku/services/user_service.dart';
 import 'package:fe_catat_uangku/utils/custom_colors.dart';
 import 'package:fe_catat_uangku/widgets/widgets.dart';
@@ -13,8 +12,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uni_links3/uni_links.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 part 'main_page.dart';
