@@ -5,7 +5,7 @@ class NoteModel {
   final int amount;
   final String category;
   final String date;
-  final String note;
+  final String? note;
 
   NoteModel({
     this.id,
@@ -14,18 +14,6 @@ class NoteModel {
     required this.amount,
     required this.category,
     required this.date,
-    required this.note,
+    this.note,
   });
-factory NoteModel.fromJson(Map<String, dynamic> json) {
-  return NoteModel(
-    id: json['_id'],
-    walletId: json['walletId'],
-    type: json['type'],
-    amount: json['amount'],
-    category: json['category'],
-    date: json['date'],
-    note: json['note'],
-  );
-}
-  // Bisa tambahkan fromJson / toJson jika kamu pakai
 }
