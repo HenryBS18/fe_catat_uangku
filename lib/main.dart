@@ -1,6 +1,7 @@
 import 'package:fe_catat_uangku/bloc/arus_kas_bloc/arus_kas_bloc.dart';
 import 'package:fe_catat_uangku/bloc/budget_bloc/budget_bloc.dart';
 import 'package:fe_catat_uangku/bloc/note_bloc/note_bloc.dart';
+import 'package:fe_catat_uangku/bloc/payment_planning_bloc/payment_planning_bloc.dart';
 import 'package:fe_catat_uangku/bloc/planned_payment_dash_bloc/payment_planned_dash_bloc.dart';
 import 'package:fe_catat_uangku/bloc/top_expense_bloc/top_expense_bloc.dart';
 import 'package:fe_catat_uangku/bloc/trend_saldo_bloc/trend_saldo_bloc.dart';
@@ -34,34 +35,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => WalletBloc(WalletService())..add(FetchWallets()),
-        ),
-        BlocProvider(
-          create: (_) =>
-              TrendSaldoBloc(TrendSaldoService())..add(LoadTrendSaldo()),
-        ),
-        BlocProvider(
-          create: (_) => UserProfileBloc(userService: UserService())
-            ..add(FetchUserProfile()),
-        ),
-        BlocProvider(
-          create: (_) => ArusKasBloc(ArusKasService())..add(LoadArusKas()),
-        ),
-        BlocProvider(
-          create: (_) =>
-              TopExpenseBloc(TopExpenseService())..add(LoadTopExpense()),
-        ),
-        BlocProvider(
-          create: (_) => PlannedPaymentDashBloc(PlannedPaymentDashService())
-            ..add(LoadPlannedPayment()),
-        ),
-        BlocProvider(
-          create: (_) => BudgetBloc(BudgetService())..add(LoadBudgets()),
-        ),
-        BlocProvider(
-          create: (_) => NoteBloc(NoteService())..add(FetchNotes()),
-        ),
+        BlocProvider(create: (_) => WalletBloc(WalletService())..add(FetchWallets())),
+        BlocProvider(create: (_) => TrendSaldoBloc(TrendSaldoService())..add(LoadTrendSaldo())),
+        BlocProvider(create: (_) => UserProfileBloc(userService: UserService())..add(FetchUserProfile())),
+        BlocProvider(create: (_) => ArusKasBloc(ArusKasService())..add(LoadArusKas())),
+        BlocProvider(create: (_) => TopExpenseBloc(TopExpenseService())..add(LoadTopExpense())),
+        BlocProvider(create: (_) => PlannedPaymentDashBloc(PlannedPaymentDashService())..add(LoadPlannedPayment())),
+        BlocProvider(create: (_) => BudgetBloc(BudgetService())..add(LoadBudgets())),
+        BlocProvider(create: (_) => NoteBloc(NoteService())..add(FetchNotes())),
+        BlocProvider(create: (_) => PaymentPlanningBloc()..add(GetPaymentPlanningListEvent())),
       ],
       child: MaterialApp(
         title: 'Catat Uangku',
