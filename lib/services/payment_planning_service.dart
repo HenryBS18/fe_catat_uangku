@@ -68,4 +68,14 @@ class PaymentPlanningService {
 
     return null;
   }
+
+  Future<bool> pay(String id) async {
+    final Response response = await api.post('/planned-payments/$id/pay');
+    print(response.body);
+    if (response.statusCode == 200) {
+      return true;
+    }
+
+    throw Exception('Gagal membayar');
+  }
 }
