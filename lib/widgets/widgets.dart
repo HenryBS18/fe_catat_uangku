@@ -10,6 +10,7 @@ import 'package:fe_catat_uangku/bloc/trend_saldo_bloc/trend_saldo_bloc.dart';
 import 'package:fe_catat_uangku/bloc/user_bloc/user_bloc.dart';
 import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
 import 'package:fe_catat_uangku/models/note.dart';
+import 'package:fe_catat_uangku/models/payment_planning.dart';
 import 'package:fe_catat_uangku/models/wallet.dart';
 import 'package:fe_catat_uangku/services/note_service.dart';
 import 'package:fe_catat_uangku/services/wallet_service.dart';
@@ -55,3 +56,5 @@ part 'home_widgets/top_expense_widget.dart';
 part 'home_widgets/planned_payment_dash_widget.dart';
 part 'home_widgets/budgets_widget.dart';
 part 'home_widgets/header_wallet_widget.dart';
+
+part 'payment_planning_item.dart';
