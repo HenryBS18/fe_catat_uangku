@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fe_catat_uangku/bloc/bloc/note_by_wallet_bloc.dart';
 import 'package:fe_catat_uangku/bloc/payment_planning_bloc/payment_planning_bloc.dart';
 import 'package:fe_catat_uangku/bloc/payment_planning_detail_bloc/payment_planning_detail_bloc.dart';
 import 'package:fe_catat_uangku/bloc/user_bloc/user_bloc.dart';
