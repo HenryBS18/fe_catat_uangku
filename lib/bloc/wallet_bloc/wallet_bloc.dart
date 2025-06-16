@@ -7,16 +7,24 @@ part 'wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletService walletService;
+
   WalletBloc(this.walletService) : super(WalletInitial()) {
     on<FetchWallets>((event, emit) async {
       emit(WalletLoading());
       try {
         final wallets = await walletService.getWallets();
-        wallets
-            .sort((a, b) => b.createdAt.compareTo(a.createdAt)); // terbaru dulu
+        wallets.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         emit(WalletLoaded(wallets));
+      } catch (e) {
+        emit(WalletError(e.toString()));
+      }
+    });
 
-        emit(WalletLoaded(wallets));
+    on<FetchWalletById>((event, emit) async {
+      emit(WalletLoading());
+      try {
+        final wallet = await walletService.getWalletById(event.walletId);
+        emit(WalletByIdLoaded(wallet));
       } catch (e) {
         emit(WalletError(e.toString()));
       }

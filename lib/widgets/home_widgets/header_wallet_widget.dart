@@ -62,101 +62,116 @@ class HeaderWalletWidget extends StatelessWidget {
                   SizedBox(
                     height: 150,
                     child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: wallets.length + 1,
-                      separatorBuilder: (_, __) => const SizedBox(width: 16),
-                      itemBuilder: (context, index) {
-                        if (index == wallets.length) {
-                          return GestureDetector(
-                            onTap: () => showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(16)),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: wallets.length + 1,
+                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        itemBuilder: (context, index) {
+                          if (index == wallets.length) {
+                            // Kartu tambah dompet (biarkan seperti sebelumnya)
+                            return GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                  ),
+                                  builder: (_) => const AddWalletModal(),
+                                );
+                              },
+                              child: Container(
+                                width: 150,
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: CustomColors.primary,
+                                        borderRadius:
+                                            BorderRadius.circular(999),
+                                      ),
+                                      child: const Icon(Icons.add,
+                                          color: Colors.white),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    const Text(
+                                      'Tambahkan Dompet',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xff565656),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              builder: (_) => const AddWalletModal(),
-                            ),
+                            );
+                          }
+
+                          // 💡 Tambahkan GestureDetector di sini
+                          final wallet = wallets[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      WalletDetailPage(walletId: wallet.id),
+                                ),
+                              );
+                            },
                             child: Container(
                               width: 150,
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(4),
+                                    padding: const EdgeInsets.all(2),
                                     decoration: BoxDecoration(
                                       color: CustomColors.primary,
-                                      borderRadius: BorderRadius.circular(999),
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: const Icon(
-                                      Icons.add,
-                                      color: Colors.white,
-                                    ),
+                                    child: const Icon(Icons.wallet,
+                                        color: Colors.white),
                                   ),
-                                  const SizedBox(height: 4),
-                                  const Text(
-                                    'Tambahkan Dompet',
-                                    style: TextStyle(
-                                      fontSize: 12,
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    wallet.name,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xff565656),
                                     ),
                                   ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    NumberFormat.currency(
+                                      locale: 'id_ID',
+                                      symbol: 'Rp ',
+                                      decimalDigits: 0,
+                                    ).format(wallet.balance),
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
                                 ],
                               ),
                             ),
                           );
-                        }
-
-                        final wallet = wallets[index];
-                        return Container(
-                          width: 150,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  color: CustomColors.primary,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: const Icon(
-                                  Icons.wallet,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                wallet.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Rp ${wallet.balance}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                        }),
                   ),
                 ],
               ),
