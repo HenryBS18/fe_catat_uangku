@@ -14,6 +14,7 @@ class _PaymentPlanningItemState extends State<PaymentPlanningItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        context.read<PaymentPlanningDetailBloc>().add(SetPaymentPlanningDetailEvent(paymentPlanning: widget.paymentPlanning));
         Navigator.pushNamed(context, '/payment-planning-detail-page');
       },
       child: Container(
