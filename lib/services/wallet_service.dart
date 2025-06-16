@@ -37,4 +37,49 @@ class WalletService {
     final Response response = await api.post('/', data: toJson(wallet));
     return response.statusCode == 201;
   }
+
+  Future<Map<String, dynamic>> getWalletTrend(String walletId,
+      {int period = 30}) async {
+    final Response response = await api.get('/$walletId/trend?period=$period');
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      return body['data'];
+    } else {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Gagal mengambil tren saldo wallet');
+    }
+  }
+
+  Future<WalletModel> getWalletById(String walletId) async {
+    final Response response = await api.get('/$walletId');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> json = jsonDecode(response.body);
+      return fromJson(json);
+    } else {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Gagal mengambil dompet');
+    }
+  }
+
+  Future<bool> updateWallet(WalletModel wallet) async {
+    final Response response =
+        await api.put('/${wallet.id}', data: toJson(wallet));
+    if (response.statusCode == 200) {
+      return true; // atau return fromJson(jsonDecode(response.body)['wallet']);
+    } else {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Gagal memperbarui dompet');
+    }
+  }
+
+  Future<bool> deleteWallet(String walletId) async {
+    final Response response = await api.delete('/$walletId');
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Gagal menghapus dompet');
+    }
+  }
 }

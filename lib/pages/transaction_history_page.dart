@@ -37,98 +37,98 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       appBar: AppBar(
         title: const Text('Riwayat Transaksi'),
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<WalletBloc, WalletState>(
-            listener: (context, state) {
-              if (state is WalletLoaded) {
-                _extractWalletNames(state.wallets);
-              }
-            },
-          )
-        ],
-        child: BlocBuilder<NoteBloc, NoteState>(
-          builder: (context, state) {
-            if (state is NoteLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is NoteLoaded) {
-              final transactions = state.notes;
+      body: BlocBuilder<WalletBloc, WalletState>(
+        builder: (context, walletState) {
+          if (walletState is WalletLoaded && _walletNames.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _extractWalletNames(walletState.wallets);
+            });
+          }
 
-              if (transactions.isEmpty) {
-                return const Center(child: Text('Tidak ada transaksi'));
-              }
+          return BlocBuilder<NoteBloc, NoteState>(
+            builder: (context, state) {
+              if (state is NoteLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is NoteLoaded) {
+                final transactions = state.notes;
 
-              final groupedTransactions = <String, List<NoteModel>>{};
+                if (transactions.isEmpty) {
+                  return const Center(child: Text('Tidak ada transaksi'));
+                }
 
-              for (var tx in transactions) {
-                final date = DateTime.tryParse(tx.date);
-                if (date == null) continue;
-                final dateStr = DateFormat('d MMMM', 'id_ID').format(date);
-                groupedTransactions.putIfAbsent(dateStr, () => []).add(tx);
-              }
+                final groupedTransactions = <String, List<NoteModel>>{};
 
-              return ListView(
-                padding: const EdgeInsets.only(bottom: 32.0),
-                children: groupedTransactions.entries.map((entry) {
-                  final date = entry.key;
-                  final txs = entry.value;
+                for (var tx in transactions) {
+                  final date = DateTime.tryParse(tx.date);
+                  if (date == null) continue;
+                  final dateStr = DateFormat('d MMMM', 'id_ID').format(date);
+                  groupedTransactions.putIfAbsent(dateStr, () => []).add(tx);
+                }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 16.0),
-                        child: Text(
-                          date,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                return ListView(
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  children: groupedTransactions.entries.map((entry) {
+                    final date = entry.key;
+                    final txs = entry.value;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 16.0),
+                          child: Text(
+                            date,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                      ),
-                      ...txs.asMap().entries.map((entry) {
-                        final i = entry.key;
-                        final tx = entry.value;
-                        return Column(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 12.0, vertical: 10.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(
-                                        0, 4), // hanya bayangan ke bawah
-                                  ),
-                                ],
+                        ...txs.asMap().entries.map((entry) {
+                          final i = entry.key;
+                          final tx = entry.value;
+                          return Column(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 12.0, vertical: 10.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: _buildTransactionTile(tx),
                               ),
-                              child: _buildTransactionTile(tx),
-                            ),
-                            if (i == txs.length - 1) ...[
-                              const SizedBox(height: 12),
-                              const Divider(
+                              if (i == txs.length - 1) ...[
+                                const SizedBox(height: 12),
+                                const Divider(
                                   thickness: 8,
-                                  color: Color.fromARGB(255, 224, 224, 224)),
+                                  color: Color.fromARGB(255, 224, 224, 224),
+                                ),
+                              ],
                             ],
-                          ],
-                        );
-                      }),
-                    ],
-                  );
-                }).toList(),
-              );
-            } else if (state is NoteError) {
-              return Center(child: Text('Terjadi kesalahan: ${state.message}'));
-            }
+                          );
+                        }),
+                      ],
+                    );
+                  }).toList(),
+                );
+              } else if (state is NoteError) {
+                return Center(
+                    child: Text('Terjadi kesalahan: ${state.message}'));
+              }
 
-            return const SizedBox();
-          },
-        ),
+              return const SizedBox();
+            },
+          );
+        },
       ),
     );
   }
