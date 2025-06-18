@@ -1,6 +1,6 @@
 part of 'wallet_bloc.dart';
 
-sealed class WalletEvent {}
+abstract class WalletEvent {}
 
 class FetchWallets extends WalletEvent {}
 

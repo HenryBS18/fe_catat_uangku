@@ -1,6 +1,6 @@
 part of 'wallet_bloc.dart';
 
-sealed class WalletState {}
+abstract class WalletState {}
 
 final class WalletInitial extends WalletState {}
 
