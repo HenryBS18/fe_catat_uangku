@@ -8,6 +8,67 @@ class AddPaymentPlanningPage extends StatefulWidget {
 }
 
 class _AddPaymentPlanningPageState extends State<AddPaymentPlanningPage> {
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+
+  List<CustomDropdownModel> wallets = [];
+  List<String> frequencies = ['monthly'];
+  List<String> categories = ['makanan', 'hiburan'];
+
+  CustomDropdownModel? selectedWallet;
+  String? selectedFrequency;
+  String? selectedCategory;
+
+  bool isLoading = false;
+
+  void getWallets() async {
+    List<WalletModel> walletsRaw = await WalletService().getWallets();
+
+    setState(() {
+      wallets = walletsRaw.map((e) => CustomDropdownModel(label: e.name, value: e.id)).toList();
+    });
+  }
+
+  void add() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final PaymentPlanningService paymentPlanningService = PaymentPlanningService();
+
+      final bool isSuccess = await paymentPlanningService.addNew(PaymentPlanning(
+        walletId: selectedWallet!.value,
+        title: titleController.text,
+        description: descriptionController.text,
+        category: selectedCategory!,
+        amount: int.parse(amountController.text),
+        paymentDate: DateFormat('dd/MM/yyyy').parse(dateController.text),
+        frequency: selectedFrequency!,
+        type: 'expense',
+      ));
+
+      if (isSuccess) {
+        context.read<PaymentPlanningBloc>().add(GetPaymentPlanningListEvent());
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      errorDialog(context, e);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    getWallets();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,72 +76,95 @@ class _AddPaymentPlanningPageState extends State<AddPaymentPlanningPage> {
         title: Text('Tambah Rencana Pembayaran'),
       ),
       backgroundColor: Colors.grey.shade400,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SafeArea(
         child: Stack(
           children: [
-            Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        spacing: 16,
-                        children: [
-                          Icon(Icons.currency_bitcoin_outlined, size: 48),
-                          Expanded(child: Input(label: 'Jumlah')),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        spacing: 16,
-                        children: [
-                          Icon(Icons.wallet_outlined, size: 48),
-                          Expanded(child: Input(label: 'Akun')),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        spacing: 16,
-                        children: [
-                          Icon(Icons.note_outlined, size: 48),
-                          Expanded(child: InputTextArea(label: 'Catatan', maxLines: 3)),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        spacing: 16,
-                        children: [
-                          Icon(Icons.calendar_month_outlined, size: 48),
-                          Expanded(
-                            child: InputDate(
-                              label: 'Tanggal',
-                              controller: TextEditingController(),
-                              iconOn: false,
-                            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Stack(
+                children: [
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.only(bottom: 120),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ],
-                      ),
-                    ],
+                          child: Column(
+                            children: [
+                              Input(
+                                label: 'Judul',
+                                controller: titleController,
+                              ),
+                              const SizedBox(height: 8),
+                              Input(
+                                label: 'Jumlah',
+                                type: TextInputType.number,
+                                controller: amountController,
+                              ),
+                              const SizedBox(height: 8),
+                              CustomDropdown(
+                                label: 'Dompet',
+                                hint: 'Pilih dompet',
+                                items: wallets,
+                                selectedItem: selectedWallet,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedWallet = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 8),
+                              InputTextArea(
+                                label: 'Deskripsi',
+                                maxLines: 3,
+                                controller: descriptionController,
+                              ),
+                              const SizedBox(height: 8),
+                              CustomDropdown(
+                                label: 'Kategori',
+                                hint: 'Pilih kategori',
+                                items: categories,
+                                selectedItem: selectedCategory,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedCategory = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 8),
+                              InputDate(label: 'Tanggal', controller: dateController, iconOn: false),
+                              const SizedBox(height: 8),
+                              CustomDropdown(
+                                label: 'Frekuensi',
+                                hint: 'Pilih frekuensi',
+                                items: frequencies,
+                                selectedItem: selectedFrequency,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedFrequency = value;
+                                  });
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )
-              ],
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Button(title: 'Simpan', onTap: add),
+                  ),
+                ],
+              ),
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Button(title: 'Simpan'),
-            )
+            if (isLoading) Loading(message: 'Sedang menambahkan rencana pembayaran'),
           ],
         ),
       ),

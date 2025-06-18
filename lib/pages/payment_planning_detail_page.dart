@@ -13,82 +13,6 @@ class _PaymentPlanningDetailPageState extends State<PaymentPlanningDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> cards = [
-      Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(Icons.live_tv, color: Colors.white, size: 64),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Langganan Netflix',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Hiburan, tontonan',
-            style: TextStyle(fontSize: 12),
-          ),
-          Text(
-            '-Rp 150.000',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Ulangi',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text('Setiap bulan pada tanggal 12'),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Akun',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text('Uang Tunai'),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Penerima',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text('Netflix'),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Catatan',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text('Bayar Netflix'),
-            ],
-          ),
-        ],
-      ),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -104,42 +28,50 @@ class _PaymentPlanningDetailPageState extends State<PaymentPlanningDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  height: 210,
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(),
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 160,
-                        child: PageView.builder(
-                          controller: pageController,
-                          itemCount: cards.length,
-                          onPageChanged: (index) {
-                            setState(() {
-                              currentIndex = index;
-                            });
-                          },
-                          itemBuilder: (context, index) {
-                            return cards[index];
-                          },
+                BlocBuilder<PaymentPlanningDetailBloc, PaymentPlanningDetailState>(
+                  builder: (context, state) {
+                    if (state is PaymentPlanningDetail) {
+                      return Container(
+                        width: double.infinity,
+                        height: 210,
+                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      DotsIndicator(
-                        dotsCount: cards.length,
-                        position: currentIndex,
-                        color: Colors.black,
-                        size: const Size(4, 4),
-                        activeColor: CustomColors.primary,
-                        activeSize: const Size(8, 8),
-                      ),
-                    ],
-                  ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 160,
+                              child: PageView.builder(
+                                controller: pageController,
+                                itemCount: 2,
+                                onPageChanged: (index) {
+                                  setState(() {
+                                    currentIndex = index;
+                                  });
+                                },
+                                itemBuilder: (context, index) {
+                                  return _buildCard(state.paymentPlanning)[index];
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            DotsIndicator(
+                              dotsCount: 2,
+                              position: currentIndex,
+                              color: Colors.black,
+                              size: const Size(4, 4),
+                              activeColor: CustomColors.primary,
+                              activeSize: const Size(8, 8),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
                 ),
                 const SizedBox(height: 32),
                 Text('Tinjauan pembayaran'),
@@ -226,5 +158,73 @@ class _PaymentPlanningDetailPageState extends State<PaymentPlanningDetailPage> {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildCard(PaymentPlanning paymentPlanning) {
+    return [
+      Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.live_tv, color: Colors.white, size: 64),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            paymentPlanning.title,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            paymentPlanning.category,
+            style: TextStyle(fontSize: 12),
+          ),
+          Text(
+            '-Rp ${paymentPlanning.amount}',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Ulangi',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text('Setiap ${paymentPlanning.frequency} pada tanggal ${DateFormat('dd').format(paymentPlanning.paymentDate)}'),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Dompet',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(paymentPlanning.walletId ?? ''),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (paymentPlanning.description.isNotEmpty)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Catatan',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(paymentPlanning.description),
+              ],
+            ),
+        ],
+      ),
+    ];
   }
 }
