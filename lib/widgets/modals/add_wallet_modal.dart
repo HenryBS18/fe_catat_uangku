@@ -111,6 +111,10 @@ class _AddWalletModalState extends State<AddWalletModal> {
             TextField(
               controller: _balanceController,
               keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                ThousandsSeparatorInputFormatter(),
+              ],
               decoration: InputDecoration(
                   labelText: 'Saldo Awal',
                   filled: true,
