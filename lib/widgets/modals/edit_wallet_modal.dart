@@ -10,18 +10,31 @@ class EditWalletModal extends StatefulWidget {
 }
 
 class _EditWalletModalState extends State<EditWalletModal> {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _balanceController = TextEditingController();
 
   void _save() async {
     if (_formKey.currentState!.validate()) {
+      final rawText = _balanceController.text.trim().replaceAll('.', '');
+      final parsedBalance = int.tryParse(rawText) ?? 0;
+
+      if (parsedBalance > 1000000000000) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Saldo tidak boleh lebih dari 1 triliun')),
+        );
+        return;
+      }
+
       final updatedWallet = WalletModel(
         id: widget.walletId,
         name: _nameController.text.trim(),
-        balance: int.tryParse(_balanceController.text.trim()) ?? 0,
+        balance: parsedBalance,
         createdAt: DateTime.now(),
       );
+
       await WalletService().updateWallet(updatedWallet);
       refresh(context);
       context.read<WalletBloc>().add(FetchWallets());
@@ -84,103 +97,107 @@ class _EditWalletModalState extends State<EditWalletModal> {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                 color: Colors.white,
               ),
-              child: ListView(
-                controller: controller,
-                children: [
-                  const Text(
-                    'Edit Dompet',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: 'Nama Dompet',
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      prefixIcon: Container(
-                        margin: const EdgeInsets.all(8),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue.shade50,
-                        ),
-                        child: const Icon(
-                          Icons.account_balance_wallet,
-                          color: Color.fromARGB(255, 19, 145, 248),
-                          size: 24,
-                        ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: EdgeInsets.zero,
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  controller: controller,
+                  children: [
+                    const Text(
+                      'Edit Dompet',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _balanceController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      ThousandsSeparatorInputFormatter(),
-                    ],
-                    decoration: InputDecoration(
-                      labelText: 'Saldo (Rp)',
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      prefixIcon: Container(
-                        margin: const EdgeInsets.all(8),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue.shade50,
-                        ),
-                        child: const Icon(
-                          Icons.attach_money,
-                          color: Color.fromARGB(255, 19, 145, 248),
-                          size: 24,
-                        ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: EdgeInsets.zero,
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _delete,
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          label: const Text('Hapus',
-                              style: TextStyle(color: Colors.red)),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.red),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Nama Dompet',
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        prefixIcon: Container(
+                          margin: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue.shade50,
+                          ),
+                          child: const Icon(
+                            Icons.account_balance_wallet,
+                            color: Color.fromARGB(255, 19, 145, 248),
+                            size: 24,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: _save,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: CustomColors.primary,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                          child: const Text('Simpan',
-                              style: TextStyle(color: Colors.white)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
                         ),
+                        contentPadding: EdgeInsets.zero,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _balanceController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        ThousandsSeparatorInputFormatter(),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: 'Saldo (Rp)',
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        prefixIcon: Container(
+                          margin: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue.shade50,
+                          ),
+                          child: const Icon(
+                            Icons.attach_money,
+                            color: Color.fromARGB(255, 19, 145, 248),
+                            size: 24,
+                          ),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: _delete,
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            label: const Text('Hapus',
+                                style: TextStyle(color: Colors.red)),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _save,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: CustomColors.primary,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: const Text('Simpan',
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           } else if (state is WalletError) {
