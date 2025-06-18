@@ -1,4 +1,5 @@
 import 'package:fe_catat_uangku/bloc/arus_kas_bloc/arus_kas_bloc.dart';
+import 'package:fe_catat_uangku/bloc/bloc/note_by_wallet_bloc.dart';
 import 'package:fe_catat_uangku/bloc/budget_bloc/budget_bloc.dart';
 import 'package:fe_catat_uangku/bloc/note_bloc/note_bloc.dart';
 import 'package:fe_catat_uangku/bloc/payment_planning_bloc/payment_planning_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:fe_catat_uangku/bloc/planned_payment_dash_bloc/payment_planned_d
 import 'package:fe_catat_uangku/bloc/top_expense_bloc/top_expense_bloc.dart';
 import 'package:fe_catat_uangku/bloc/trend_saldo_bloc/trend_saldo_bloc.dart';
 import 'package:fe_catat_uangku/bloc/wallet_bloc/wallet_bloc.dart';
+import 'package:fe_catat_uangku/bloc/wallet_trend_bloc/wallet_trend_bloc.dart';
 import 'package:fe_catat_uangku/services/arus_kas_service.dart';
 import 'package:fe_catat_uangku/services/budget_service.dart';
 import 'package:fe_catat_uangku/services/note_service.dart';
@@ -46,6 +48,12 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => NoteBloc(NoteService())..add(FetchNotes())),
         BlocProvider(create: (_) => PaymentPlanningBloc()..add(GetPaymentPlanningListEvent())),
         BlocProvider(create: (_) => PaymentPlanningDetailBloc()),
+        BlocProvider(
+          create: (_) => WalletTrendBloc(WalletService()),
+        ),
+        BlocProvider(
+          create: (_) => NoteByWalletBloc(NoteService()),
+        ),
       ],
       child: MaterialApp(
         title: 'Catat Uangku',

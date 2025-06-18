@@ -18,7 +18,14 @@ class HeaderWalletWidget extends StatelessWidget {
 
             return Container(
               decoration: BoxDecoration(
-                color: const Color(0xff20C997),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF1E3C72), // deep blue
+                    Color.fromARGB(255, 66, 117, 205), // soft royal blue
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: const EdgeInsets.all(16),
@@ -26,15 +33,6 @@ class HeaderWalletWidget extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 76,
-                        height: 76,
-                        decoration: BoxDecoration(
-                          color: Colors.white24,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -85,6 +83,13 @@ class HeaderWalletWidget extends StatelessWidget {
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: Colors.grey.shade300,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Column(

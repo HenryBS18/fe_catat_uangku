@@ -117,9 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
       shadowColor: const Color.fromRGBO(0, 0, 0, 2),
       child: Column(
         children: [
-          const SizedBox(height: 16),
-          const CircleAvatar(radius: 40),
-          const SizedBox(height: 8),
+          const SizedBox(height: 28),
           Text(name,
               style:
                   const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
