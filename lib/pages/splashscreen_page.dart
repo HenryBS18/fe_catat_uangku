@@ -15,7 +15,8 @@ class _SplashscreenPageState extends State<SplashscreenPage> {
     await Future.delayed(const Duration(seconds: 1));
 
     if (token == null) {
-      Navigator.pushNamedAndRemoveUntil(context, '/login-page', (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/login-page', (route) => false);
       return;
     }
 
@@ -25,7 +26,6 @@ class _SplashscreenPageState extends State<SplashscreenPage> {
   @override
   void initState() {
     super.initState();
-
     checkAuth();
   }
 
@@ -35,7 +35,10 @@ class _SplashscreenPageState extends State<SplashscreenPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF56CCF2), Color(0xFF2F80ED)],
+            colors: [
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 171, 208, 255)
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -44,30 +47,10 @@ class _SplashscreenPageState extends State<SplashscreenPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Catat Uang',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  SvgPicture.asset(
-                    'lib/assets/icons/logo1.svg',
-                    width: 64,
-                    height: 64,
-                  ),
-                  SvgPicture.asset(
-                    'lib/assets/icons/logo.svg',
-                    width: 32,
-                    height: 32,
-                  ),
-                ],
+              Image.asset(
+                'lib/assets/icons/logo-catat-uangku.png',
+                width: 280,
+                height: 280,
               ),
             ],
           ),

@@ -14,10 +14,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Catat Uangku',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Image.asset(
+          'lib/assets/icons/Catat-Uangku-Horizontal.png',
+          height: 120,
         ),
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

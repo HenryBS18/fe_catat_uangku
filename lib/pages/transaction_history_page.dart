@@ -205,6 +205,14 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     final parsedDate = DateTime.tryParse(tx.date);
 
     return ListTile(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => EditNotePageModal(note: tx),
+        );
+      },
       leading: CircleAvatar(
         backgroundColor: iconColor.withOpacity(0.1),
         child: Icon(icon, color: iconColor),

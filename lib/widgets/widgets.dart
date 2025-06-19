@@ -46,6 +46,7 @@ part 'modals/add_note_modal.dart';
 part 'modals/scan_modal.dart';
 part 'modals/add_wallet_modal.dart';
 part 'modals/edit_wallet_modal.dart';
+part 'modals/edit_note_modal.dart';
 
 part 'input/input.dart';
 part 'input/input_password.dart';
