@@ -38,15 +38,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => WalletBloc(WalletService())..add(FetchWallets())),
-        BlocProvider(create: (_) => TrendSaldoBloc(TrendSaldoService())..add(LoadTrendSaldo())),
-        BlocProvider(create: (_) => UserProfileBloc(userService: UserService())..add(FetchUserProfile())),
-        BlocProvider(create: (_) => ArusKasBloc(ArusKasService())..add(LoadArusKas())),
-        BlocProvider(create: (_) => TopExpenseBloc(TopExpenseService())..add(LoadTopExpense())),
-        BlocProvider(create: (_) => PlannedPaymentDashBloc(PlannedPaymentDashService())..add(LoadPlannedPayment())),
-        BlocProvider(create: (_) => BudgetBloc(BudgetService())..add(LoadBudgets())),
+        BlocProvider(
+            create: (_) => WalletBloc(WalletService())..add(FetchWallets())),
+        BlocProvider(
+            create: (_) =>
+                TrendSaldoBloc(TrendSaldoService())..add(LoadTrendSaldo())),
+        BlocProvider(
+            create: (_) => UserProfileBloc(userService: UserService())
+              ..add(FetchUserProfile())),
+        BlocProvider(
+            create: (_) => ArusKasBloc(ArusKasService())..add(LoadArusKas())),
+        BlocProvider(
+            create: (_) =>
+                TopExpenseBloc(TopExpenseService())..add(LoadTopExpense())),
+        BlocProvider(
+            create: (_) => PlannedPaymentDashBloc(PlannedPaymentDashService())
+              ..add(LoadPlannedPayment())),
+        BlocProvider(
+            create: (_) => BudgetBloc(BudgetService())..add(LoadBudgets())),
         BlocProvider(create: (_) => NoteBloc(NoteService())..add(FetchNotes())),
-        BlocProvider(create: (_) => PaymentPlanningBloc()..add(GetPaymentPlanningListEvent())),
+        BlocProvider(
+            create: (_) =>
+                PaymentPlanningBloc()..add(GetPaymentPlanningListEvent())),
         BlocProvider(create: (_) => PaymentPlanningDetailBloc()),
         BlocProvider(
           create: (_) => WalletTrendBloc(WalletService()),

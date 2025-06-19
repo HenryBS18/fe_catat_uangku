@@ -29,8 +29,9 @@ class ArusKasWidget extends StatelessWidget {
           final income = data.income;
           final expense = data.expense;
 
-          final barRatio =
-              income + expense == 0 ? 0.5 : income / (income + expense);
+          final total = income + expense;
+          final barRatio = total == 0 ? 0.0 : income / total;
+          final showBar = total > 0;
 
           return Card(
             shape:
@@ -73,10 +74,11 @@ class ArusKasWidget extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
-                      value: barRatio,
+                      value: showBar ? barRatio : 0.0,
                       minHeight: 12,
                       backgroundColor: Colors.grey.shade200,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.green),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -91,10 +93,11 @@ class ArusKasWidget extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
-                      value: 1.0,
+                      value: showBar ? 1.0 - barRatio : 0.0,
                       minHeight: 12,
                       backgroundColor: Colors.grey.shade200,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.red),
                     ),
                   ),
                   const SizedBox(height: 12),

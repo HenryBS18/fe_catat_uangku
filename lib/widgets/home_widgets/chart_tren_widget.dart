@@ -1,7 +1,14 @@
 part of '../widgets.dart';
 
-class ChartTrenWidget extends StatelessWidget {
+class ChartTrenWidget extends StatefulWidget {
   const ChartTrenWidget({super.key});
+
+  @override
+  State<ChartTrenWidget> createState() => _ChartTrenWidgetState();
+}
+
+class _ChartTrenWidgetState extends State<ChartTrenWidget> {
+  int dayRange = 7;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +31,20 @@ class ChartTrenWidget extends StatelessWidget {
                         .textTheme
                         .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold)),
+                DropdownButton<int>(
+                  value: dayRange,
+                  items: const [
+                    DropdownMenuItem(value: 7, child: Text('7 Hari')),
+                    DropdownMenuItem(value: 30, child: Text('30 Hari')),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() => dayRange = val);
+                    }
+                  },
+                  underline: const SizedBox(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                )
               ],
             ),
             const SizedBox(height: 12),
@@ -52,24 +73,39 @@ class ChartTrenWidget extends StatelessWidget {
                     return Center(child: Text(state.message));
                   } else if (state is TrendSaldoLoaded) {
                     final now = DateTime.now();
-                    final fullList = state.data
-                        .where((e) =>
-                            e.date.isAfter(now.subtract(Duration(days: 7))))
-                        .toList();
+                    final startDate =
+                        now.subtract(Duration(days: dayRange - 1));
+                    final dates = List.generate(
+                        dayRange, (i) => startDate.add(Duration(days: i)));
 
-                    if (fullList.isEmpty) {
-                      return const Center(child: Text('Tidak ada data'));
+                    final Map<String, double?> balanceByDate = {
+                      for (var d in dates)
+                        DateFormat('yyyy-MM-dd').format(d): null
+                    };
+                    for (var entry in state.data) {
+                      final key = DateFormat('yyyy-MM-dd').format(entry.date);
+                      if (balanceByDate.containsKey(key)) {
+                        balanceByDate[key] = entry.balance;
+                      }
                     }
 
-                    final spots = fullList
-                        .asMap()
-                        .entries
-                        .map((e) => FlSpot(e.key.toDouble(), e.value.balance))
-                        .toList();
+                    double? lastBalance = null;
+                    final fullList = dates.map((d) {
+                      final key = DateFormat('yyyy-MM-dd').format(d);
+                      final raw = balanceByDate[key];
+                      if (raw != null) {
+                        lastBalance = raw;
+                      }
+                      return (date: d, balance: lastBalance ?? 0.0);
+                    }).toList();
 
-                    final maxY = fullList
-                            .map((e) => e.balance)
-                            .reduce((a, b) => a > b ? a : b) *
+                    final spots = fullList.asMap().entries.map((e) {
+                      return FlSpot(e.key.toDouble(), e.value.balance);
+                    }).toList();
+
+                    final maxY = (fullList
+                            .map((e) => e.balance < 0 ? 0 : e.balance)
+                            .reduce((a, b) => a > b ? a : b)) *
                         1.1;
 
                     return LineChart(
@@ -77,7 +113,7 @@ class ChartTrenWidget extends StatelessWidget {
                         minX: 0,
                         maxX: (fullList.length - 1).toDouble(),
                         minY: 0,
-                        maxY: maxY,
+                        maxY: maxY == 0 ? 100 : maxY,
                         gridData: FlGridData(
                           show: true,
                           drawVerticalLine: false,
@@ -90,14 +126,14 @@ class ChartTrenWidget extends StatelessWidget {
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              interval: 1.0,
+                              interval: dayRange == 30 ? 5.0 : 1.0,
                               getTitlesWidget: (v, meta) {
                                 final idx = v.toInt();
                                 if (idx < 0 || idx >= fullList.length)
                                   return const SizedBox();
                                 final dt = fullList[idx].date;
-                                return SideTitleWidget(
-                                  meta: meta,
+                                return Transform.rotate(
+                                  angle: dayRange > 7 ? -1.0 : 0.0,
                                   child: Text('${dt.day}/${dt.month}',
                                       style: const TextStyle(fontSize: 10)),
                                 );
@@ -126,21 +162,17 @@ class ChartTrenWidget extends StatelessWidget {
                             getTooltipColor: (spot) => Colors.white,
                             tooltipBorderRadius: BorderRadius.circular(5),
                             tooltipBorder: BorderSide(
-                              color: Colors.black.withOpacity(0.1),
-                              width: 1,
-                            ),
+                                color: Colors.black.withOpacity(0.1), width: 1),
                             fitInsideHorizontally: true,
                             fitInsideVertically: true,
                             getTooltipItems: (touchedSpots) {
                               return touchedSpots.map((touchedSpot) {
                                 return LineTooltipItem(
-                                  'Rp ${touchedSpot.y.toStringAsFixed(0)}',
-                                  const TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                );
+                                    'Rp ${touchedSpot.y.toStringAsFixed(0)}',
+                                    const TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12));
                               }).toList();
                             },
                           ),
