@@ -35,7 +35,8 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Riwayat Transaksi'),
+        title: const Text('Riwayat Catatan',
+            style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: BlocBuilder<WalletBloc, WalletState>(
         builder: (context, walletState) {

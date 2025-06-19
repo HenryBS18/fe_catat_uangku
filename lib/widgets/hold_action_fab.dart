@@ -39,7 +39,7 @@ class _HoldActionFABState extends State<HoldActionFAB> {
             children: [
               GestureDetector(onTap: _removeOverlay),
               Positioned.fill(
-                child: Container(color: Colors.black.withOpacity(0.3)),
+                child: Container(color: Colors.black.withOpacity(0.5)),
               ),
               Positioned(
                 left: position.dx + 28 - 100,
@@ -98,7 +98,7 @@ class _HoldActionFABState extends State<HoldActionFAB> {
                                           shape: BoxShape.circle,
                                           color: isHighlighted
                                               ? Colors.green
-                                              : Colors.white,
+                                              : Color(0xFF1E3C72),
                                           boxShadow: isHighlighted
                                               ? [
                                                   BoxShadow(
@@ -111,7 +111,8 @@ class _HoldActionFABState extends State<HoldActionFAB> {
                                               : [],
                                         ),
                                         child: Icon(options[i].icon,
-                                            color: Colors.black),
+                                            color: const Color.fromARGB(
+                                                255, 255, 255, 255)),
                                       ),
                                     ),
                                   ),
@@ -119,10 +120,10 @@ class _HoldActionFABState extends State<HoldActionFAB> {
                                   Text(
                                     options[i].label,
                                     style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black,
-                                      decoration: TextDecoration.none,
-                                    ),
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                        decoration: TextDecoration.none,
+                                        fontWeight: FontWeight.bold),
                                   )
                                 ],
                               ),

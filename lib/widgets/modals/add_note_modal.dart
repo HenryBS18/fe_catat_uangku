@@ -66,6 +66,7 @@ class _AddNotePageState extends State<AddNotePage> {
 
     context.read<ArusKasBloc>().add(LoadArusKas());
     context.read<NoteBloc>().add(FetchNotes());
+    context.read<WalletBloc>().add(FetchWallets());
   }
 
   bool isLoading = false;

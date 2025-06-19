@@ -85,7 +85,7 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
               backgroundColor: const Color(0xFF0F55C3),
               centerTitle: true,
               title: const Text(
-                'Input Suara',
+                'Catat via suara',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -109,7 +109,7 @@ class _VoiceModalPageState extends State<VoiceModalPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
                           Text(
-                            "📌 Panduan Pemakaian:",
+                            "Panduan Pemakaian:",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),

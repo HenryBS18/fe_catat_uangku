@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           appBarTheme: const AppBarTheme(color: Colors.white),
           colorScheme: const ColorScheme.light(
-            primary: CustomColors.primary,
+            primary: Color(0xFF1E3C72),
             surface: Colors.white,
           ),
         ),
