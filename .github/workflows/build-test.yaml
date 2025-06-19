@@ -1,22 +1,21 @@
-name: Build test
+name: Build Flutter App
 
 on:
-  push:
-    branches:
-      - main
-
+  workflow_run: 
+    workflows: ["Unit Test", "Widget Test"]
+    types:
+      - completed
+ 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+  build-android:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.1'
@@ -24,33 +23,49 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # Build Android APK
-      - name: Build APK (Android)
-        if: matrix.os == 'ubuntu-latest'
+      - name: Build APK
         run: flutter build apk --release
 
-      # Build macOS app
-      - name: Build macOS app
-        if: matrix.os == 'macos-latest'
-        run: flutter build macos
-
-      # ✅ Build iOS app (only on macOS)
-      - name: Build iOS app
-        if: matrix.os == 'macos-latest'
-        run: flutter build ios --release
-
-      # Build Windows app
-      - name: Build Windows app
-        if: matrix.os == 'windows-latest'
-        run: flutter build windows
-
-      - name: Upload build artifact
-        if: success()
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: flutter-build-${{ matrix.os }}
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/macos/Build/Products/Release/*.app
-            build/ios/iphoneos/Runner.app
-            build/windows/runner/Release/*.exe
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-windows:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.1'
+      - run: flutter pub get
+      - run: flutter build windows
+
+  build-linux:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.1'
+      - run: flutter pub get
+      - run: flutter config --enable-linux-desktop
+      - run: flutter build linux
+
+  build-macos:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.1'
+      - run: flutter pub get
+      - run: flutter config --enable-macos-desktop
+      - run: flutter build macos
