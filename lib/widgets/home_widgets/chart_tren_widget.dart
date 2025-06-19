@@ -92,18 +92,21 @@ class _ChartTrenWidgetState extends State<ChartTrenWidget> {
                       }
                     }
 
-                    double? lastBalance = null;
+                    double lastBalance = 0.0;
                     final fullList = dates.map((d) {
                       final key = DateFormat('yyyy-MM-dd').format(d);
-                      final raw = balanceByDate[key];
-                      if (raw != null) {
-                        lastBalance = raw;
-                      }
-                      return (date: d, balance: lastBalance ?? 0.0);
+                      final balance = balanceByDate[key] ?? lastBalance;
+                      lastBalance = balance;
+                      return (date: d, balance: balance);
                     }).toList();
 
                     final spots = fullList.asMap().entries.map((e) {
-                      return FlSpot(e.key.toDouble(), e.value.balance);
+                      final value = e.value.balance;
+                      return FlSpot(
+                          e.key.toDouble(),
+                          value <= 0 && e.key > 0
+                              ? fullList[e.key - 1].balance
+                              : value);
                     }).toList();
 
                     final maxY = (fullList
