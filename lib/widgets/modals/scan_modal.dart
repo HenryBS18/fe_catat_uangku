@@ -118,7 +118,7 @@ class _ScanModalState extends State<ScanModal> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           child: Scaffold(
             appBar: AppBar(
-              title: const Text("Scan Bukti Transaksi"),
+              title: const Text("Catat via Nota"),
               centerTitle: true,
               actions: _imageFile == null && _isCameraReady
                   ? [

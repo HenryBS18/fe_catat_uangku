@@ -75,7 +75,6 @@ class _ChartTrenWidgetState extends State<ChartTrenWidget> {
                     if (state.data.isEmpty) {
                       return const Center(child: Text('Tidak ada data'));
                     }
-
                     final now = DateTime.now();
                     final startDate =
                         now.subtract(Duration(days: dayRange - 1));
@@ -192,9 +191,7 @@ class _ChartTrenWidgetState extends State<ChartTrenWidget> {
                             color: Theme.of(context).primaryColor,
                             belowBarData: BarAreaData(
                                 show: true,
-                                color: Theme.of(context)
-                                    .primaryColor
-                                    .withOpacity(0.2)),
+                                color: Colors.blue.shade400.withOpacity(0.2)),
                             dotData: FlDotData(show: false),
                           ),
                         ],
@@ -212,9 +209,10 @@ class _ChartTrenWidgetState extends State<ChartTrenWidget> {
                 Row(
                   children: [
                     Container(
-                        width: 12,
-                        height: 12,
-                        color: Theme.of(context).primaryColor),
+                      width: 12,
+                      height: 12,
+                      color: Colors.blue.shade600,
+                    ),
                     const SizedBox(width: 6),
                     const Text('Tren Saldo', style: TextStyle(fontSize: 12)),
                   ],
